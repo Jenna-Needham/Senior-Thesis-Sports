@@ -10,9 +10,10 @@
 ####################################################################################
 
 ### Settings and Packages
-
+# set WD for Jenna
 setwd("G:/My Drive/Senior Thesis")
-getwd()
+
+setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
 
 install.packages('dplyr', repos = 'https://cloud.r-project.org')
 install.packages("psych")
@@ -25,7 +26,7 @@ library(DBI)
 library(odbc)
 
 
-### Load Data
+### Load Data for Needham
 ## 1997
 
 yrbs1997 <- dbConnect(
@@ -74,6 +75,56 @@ yrbs2023 <- dbConnect(
 dbListTables(yrbs2023)
 yrbs2023 <- dbReadTable(yrbs2023, "XXHq")
 
+
+# Load data for Kline
+
+## 1997
+
+yrbs1997 <- dbConnect(
+  odbc(),
+  .connection_string =
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
+     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/yrbs1997.mdb;"
+)
+
+dbListTables(yrbs1997)
+yrbs1997 <- dbReadTable(yrbs1997, "XXHq")
+
+## 2007
+
+yrbs2007 <- dbConnect(
+  odbc(),
+  .connection_string =
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
+     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/yrbs2007.mdb;"
+)
+
+dbListTables(yrbs2007)
+yrbs2007 <- dbReadTable(yrbs2007, "XXHq")
+
+## 2017
+
+yrbs2017 <- dbConnect(
+  odbc(),
+  .connection_string =
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
+     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/XXH2017_YRBS_Data.mdb;"
+)
+
+dbListTables(yrbs2017)
+yrbs2017 <- dbReadTable(yrbs2017, "XXHq")
+
+## 2023
+
+yrbs2023 <- dbConnect(
+  odbc(),
+  .connection_string =
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
+     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/XXH2023_YRBS_Data.mdb;"
+)
+
+dbListTables(yrbs2023)
+yrbs2023 <- dbReadTable(yrbs2023, "XXHq")
 ####################################################################################
 ############              PHASE 1: CLEAN DATA FOR ANALYSIS              ############
 ####################################################################################
