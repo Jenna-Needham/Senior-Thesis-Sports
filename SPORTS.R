@@ -10,9 +10,10 @@
 ####################################################################################
 
 ### Settings and Packages
-# set WD for Jenna
+# set WD for Needham
 setwd("G:/My Drive/Senior Thesis")
 
+# set WD for kline
 setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
 
 install.packages('dplyr', repos = 'https://cloud.r-project.org')
