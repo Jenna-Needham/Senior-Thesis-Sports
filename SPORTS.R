@@ -11,7 +11,7 @@
 
 ### Settings and Packages
 # set WD for Needham
-setwd("G:/My Drive/Senior Thesis")
+setwd("G:/My Drive/Senior Thesis/SPORTS/work")
 
 # set WD for kline
 setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
@@ -140,6 +140,9 @@ yrbs2023 <- dbReadTable(yrbs2023, "XXHq")
 ############                       Sports Participation                   ############
 
 ## 1997
+
+## AMOUNT OF TEAMS PLAYED FOR RUN BY SCHOOL
+
 # STEP 1: Examine variable and coding schema
 
 table(yrbs1997$Q83)
@@ -162,6 +165,31 @@ table(yrbs1997$Q83, yrbs1997$no_sport)
 table(yrbs1997$Q83, yrbs1997$one_sport)
 table(yrbs1997$Q83, yrbs1997$two_sport)
 table(yrbs1997$Q83, yrbs1997$three_or_more_sport)
+
+## AMOUNT OF TEAMS PLAYED FOR ORGS OUTSIDE OF SCHOOL
+
+# STEP 1: Examine variable and coding schema
+
+table(yrbs1997$Q84)
+
+# STEP 2: Create dummy variables for each category of sports participation
+
+yrbs1997 <- mutate(yrbs1997, no_sport_org = ifelse(Q84 == 1, 1, 0))
+yrbs1997 <- mutate(yrbs1997, one_sport_org = ifelse(Q84 == 2, 1, 0))
+yrbs1997 <- mutate(yrbs1997, two_sport_org = ifelse(Q84 == 3, 1, 0))
+yrbs1997 <- mutate(yrbs1997, three_or_more_sport_org = ifelse(Q84 == 4, 1, 0))
+
+# STEP 3: Confirm creation at Q84 and each dummy variable
+
+table(yrbs1997$no_sport_org)
+table(yrbs1997$one_sport_org)
+table(yrbs1997$two_sport_org)
+table(yrbs1997$three_or_more_sport_org)
+
+table(yrbs1997$Q84, yrbs1997$no_sport_org)
+table(yrbs1997$Q84, yrbs1997$one_sport_org)
+table(yrbs1997$Q84, yrbs1997$two_sport_org)
+table(yrbs1997$Q84, yrbs1997$three_or_more_sport_org)
 
 ## 2007
 
@@ -197,7 +225,7 @@ yrbs2017 <- mutate(yrbs2017, one_sport = ifelse(q83 == 2, 1, 0))
 yrbs2017 <- mutate(yrbs2017, two_sport = ifelse(q83 == 3, 1, 0))
 yrbs2017 <- mutate(yrbs2017, three_or_more_sport = ifelse(q83 == 4, 1, 0))
 
-# STEP 3: Confirm creation at Q83 and each dummy variable
+# STEP 3: Confirm creation at q83 and each dummy variable
 
 table(yrbs2017$no_sport)
 table(yrbs2017$one_sport)
@@ -222,7 +250,7 @@ yrbs2023 <- mutate(yrbs2023, one_sport = ifelse(q78 == 2, 1, 0))
 yrbs2023 <- mutate(yrbs2023, two_sport = ifelse(q78 == 3, 1, 0))
 yrbs2023 <- mutate(yrbs2023, three_or_more_sport = ifelse(q78 == 4, 1, 0))
 
-# STEP 3: Confirm creation at Q78 and each dummy variable
+# STEP 3: Confirm creation at q78 and each dummy variable
 
 table(yrbs2023$no_sport)
 table(yrbs2023$one_sport)
@@ -268,7 +296,7 @@ table(yrbs1997$age, useNA = "ifany")
 
 table(yrbs2007$q1)
 
-# STEP 2: Create dummy variables for each category of age
+# STEP 2: Recode age as a numeric variable
 
 yrbs2007 <- mutate(yrbs2007, age = case_when(
   q1 == 1 ~ 12,
@@ -280,7 +308,7 @@ yrbs2007 <- mutate(yrbs2007, age = case_when(
   q1 == 7 ~ 18
 ))
 
-# STEP 3: Confirm creation at Q1 and each dummy variable
+# STEP 3: Confirm recording
 
 table(yrbs2007$q1, yrbs2007$age)
 table(yrbs2007$age, useNA = "ifany")
@@ -291,7 +319,7 @@ table(yrbs2007$age, useNA = "ifany")
 
 table(yrbs2017$q1)
 
-# STEP 2: Create dummy variables for each category of age
+# STEP 2: Recode age as a numeric variable
 
 yrbs2017 <- mutate(yrbs2017, age = case_when(
   q1 == 1 ~ 12,
@@ -303,7 +331,7 @@ yrbs2017 <- mutate(yrbs2017, age = case_when(
   q1 == 7 ~ 18
 ))
 
-# STEP 3: Confirm creation at Q1 and each dummy variable
+# STEP 3: Confirm recoding
 
 table(yrbs2017$q1, yrbs2017$age)
 table(yrbs2017$age, useNA = "ifany")
@@ -314,7 +342,7 @@ table(yrbs2017$age, useNA = "ifany")
 
 table(yrbs2023$q1)
 
-# STEP 2: Create dummy variables for each category of age
+# STEP 2: Recode age as a numeric variable
 
 yrbs2023 <- mutate(yrbs2023, age = case_when(
   q1 == 1 ~ 12,
@@ -326,7 +354,7 @@ yrbs2023 <- mutate(yrbs2023, age = case_when(
   q1 == 7 ~ 18
 ))
 
-# STEP 3: Confirm creation at Q1 and each dummy variable
+# STEP 3: Confirm recoding
 
 table(yrbs2023$q1, yrbs2023$age)
 table(yrbs2023$age, useNA = "ifany")
@@ -405,7 +433,7 @@ table(yrbs2023$q2, yrbs2023$female)
 
 table(yrbs1997$Q4, useNA = "ifany")
 
-# STEP 2: Create female dummy variable
+# STEP 2: Create race dummy variables
 
 yrbs1997 <- mutate(yrbs1997, white = ifelse(Q4 == 1, 1, 0))
 yrbs1997 <- mutate(yrbs1997, black = ifelse(Q4 == 2, 1, 0))
@@ -436,7 +464,7 @@ table(yrbs1997$Q4, yrbs1997$other_race)
 
 table(yrbs2007$raceeth, useNA = "ifany")
 
-# STEP 2: Create female dummy variable
+# STEP 2: Create race dummy variables
 
 yrbs2007 <- mutate(yrbs2007, american_indian = ifelse(raceeth == 1, 1, 0))
 yrbs2007 <- mutate(yrbs2007, asian = ifelse(raceeth == 2, 1, 0))
@@ -474,7 +502,7 @@ table(yrbs2007$raceeth, yrbs2007$multiple_nonhispanic)
 
 table(yrbs2017$raceeth, useNA = "ifany")
 
-# STEP 2: Create female dummy variable
+# STEP 2: Create race dummy variables
 
 yrbs2017 <- mutate(yrbs2017, american_indian = ifelse(raceeth == 1, 1, 0))
 yrbs2017 <- mutate(yrbs2017, asian = ifelse(raceeth == 2, 1, 0))
@@ -511,7 +539,7 @@ table(yrbs2017$raceeth, yrbs2017$multiple_nonhispanic)
 
 table(yrbs2023$raceeth, useNA = "ifany")
 
-# STEP 2: Create female dummy variable
+# STEP 2: Create race dummy variables
 
 yrbs2023 <- mutate(yrbs2023, american_indian = ifelse(raceeth == 1, 1, 0))
 yrbs2023 <- mutate(yrbs2023, asian = ifelse(raceeth == 2, 1, 0))
@@ -551,7 +579,7 @@ table(yrbs2023$raceeth, yrbs2023$multiple_nonhispanic)
 
 table(yrbs1997$Q18, useNA = "ifany")
 
-# STEP 2: Create fighting variable
+# STEP 2: Create binary variable for fighting
 
 yrbs1997 <- mutate(yrbs1997, fight = ifelse(Q18 >= 2 & Q18 <= 8, 1, 0))
 
@@ -566,7 +594,7 @@ table(yrbs1997$Q18, yrbs1997$fight)
 
 table(yrbs2007$q18, useNA = "ifany")
 
-# STEP 2: Create fighting variable
+# STEP 2: Create binary variable for fighting
 
 yrbs2007 <- mutate(yrbs2007, fight = ifelse(q18 >= 2 & q18 <= 8, 1, 0))
 
@@ -581,7 +609,7 @@ table(yrbs2007$q18, yrbs2007$fight)
 
 table(yrbs2017$q17, useNA = "ifany")
 
-# STEP 2: Create fighting variable
+# STEP 2: Create binary variable for fighting
 
 yrbs2017 <- mutate(yrbs2017, fight = ifelse(q17 >= 2 & q17 <= 8, 1, 0))
 
@@ -596,7 +624,7 @@ table(yrbs2017$q17, yrbs2017$fight)
 
 table(yrbs2023$q16, useNA = "ifany")
 
-# STEP 2: Create fighting variable
+# STEP 2: Create binary variable for fighting
 
 yrbs2023 <- mutate(yrbs2023, fight = ifelse(q16 >= 2 & q16 <= 8, 1, 0))
 
@@ -613,7 +641,7 @@ table(yrbs2023$q16, yrbs2023$fight)
 
 table(yrbs1997$Q39, useNA = "ifany")
 
-# STEP 2: Create binge drinking variable
+# STEP 2: Create binary variable for binge drinking
 
 yrbs1997 <- mutate(yrbs1997, binge_drinking = ifelse(Q39 >= 2 & Q39 <= 7, 1, 0))
 
@@ -628,7 +656,7 @@ table(yrbs1997$Q39, yrbs1997$binge_drinking)
 
 table(yrbs2007$q42, useNA = "ifany")
 
-# STEP 2: Create binge drinking variable
+# STEP 2: Create binary variable for binge drinking
 
 yrbs2007 <- mutate(yrbs2007, binge_drinking = ifelse(q42 >= 2 & q42 <= 7, 1, 0))
 
@@ -643,7 +671,7 @@ table(yrbs2007$q42, yrbs2007$binge_drinking)
 
 table(yrbs2017$q44, useNA = "ifany")
 
-# STEP 2: Create binge drinking variable
+# STEP 2: Create binary variable for binge drinking
 
 yrbs2017 <- mutate(yrbs2017, binge_drinking = ifelse(q44 >= 2 & q44 <= 7, 1, 0))
 
@@ -658,7 +686,7 @@ table(yrbs2017$q44, yrbs2017$binge_drinking)
 
 table(yrbs2023$q43, useNA = "ifany")
 
-# STEP 2: Create binge drinking variable
+# STEP 2: Create binary variable for binge drinking
 
 yrbs2023 <- mutate(yrbs2023, binge_drinking = ifelse(q43 >= 2 & q43 <= 7, 1, 0))
 
