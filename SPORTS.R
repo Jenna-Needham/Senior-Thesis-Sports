@@ -207,10 +207,10 @@ table(yrbs2007$one_sport)
 table(yrbs2007$two_sport)
 table(yrbs2007$three_or_more_sport)
 
-table(yrbs2007$Q83, yrbs2007$no_sport)
-table(yrbs2007$Q83, yrbs2007$one_sport)
-table(yrbs2007$Q83, yrbs2007$two_sport)
-table(yrbs2007$Q83, yrbs2007$three_or_more_sport)
+table(yrbs2007$q83, yrbs2007$no_sport)
+table(yrbs2007$q83, yrbs2007$one_sport)
+table(yrbs2007$q83, yrbs2007$two_sport)
+table(yrbs2007$q83, yrbs2007$three_or_more_sport)
 
 ## 2017 
 # STEP 1: Examine variable and coding schema
@@ -803,3 +803,37 @@ yrbs2023 <- mutate(yrbs2023, cocaine_use = ifelse(q50 >= 2 & q50 <= 6, 1, 0))
 table(yrbs2023$cocaine_use)
 table(yrbs2023$q50, yrbs2023$cocaine_use)
 
+####################################################################################
+############              PHASE 2: CREATE MY DATASET                    ############
+####################################################################################
+
+### STEP 1: Create a list of variables to keep
+
+my_varlist <- c("no_sport", "one_sport", "two_sport", "three_or_more_sport",
+                "no_sport_org", "one_sport_org", "two_sport_org", "three_or_more_sport_org", 
+                "age", "white", "black", "hispanic", "asian", "american_indian", "other_race", 
+                "native_hawaiian", "multiple_hispanic", "multiple_nonhispanic", "fight", 
+                "binge_drinking", "marijuana_use", "cocaine_use")
+
+### STEP 2: create a new dataset for all variables in varlist in 1997
+yrbs1997_complete_case <- yrbs1997 %>%
+  select(any_of(my_varlist)) %>%
+  filter(complete.cases(.))
+
+### STEP 3: create a new dataset for all variables in varlist in 2007
+
+yrbs2007_complete_case <- yrbs2007 %>%
+  select(any_of(my_varlist)) %>%
+  filter(complete.cases(.))
+
+### STEP 4: create a new dataset for all variables in varlist in 2017
+
+yrbs2017_complete_case <- yrbs2017 %>%
+  select(any_of(my_varlist)) %>%
+  filter(complete.cases(.))
+
+### STEP 5: create a new dataset for all variables in varlist in 2023
+
+yrbs2023_complete_case <- yrbs2023 %>%
+  select(any_of(my_varlist)) %>%
+  filter(complete.cases(.))
