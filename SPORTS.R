@@ -18,114 +18,31 @@ setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
 
 install.packages('dplyr', repos = 'https://cloud.r-project.org')
 install.packages("psych")
-install.packages("DBI")
-install.packages("odbc")
+install.packages("tidyverse")
 
 library(dplyr)
 library(psych)
-library(DBI)
-library(odbc)
+library(tidyverse)
 
 
 ### Load Data for Needham
 ## 1997
 
-yrbs1997 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/Senior Thesis/yrbs1997.mdb;"
-)
-
-dbListTables(yrbs1997)
-yrbs1997 <- dbReadTable(yrbs1997, "XXHq")
+yrbs1997 <- read.csv("yrbs1997.csv")
 
 ## 2007
 
-yrbs2007 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/Senior Thesis/yrbs2007.mdb;"
-)
-
-dbListTables(yrbs2007)
-yrbs2007 <- dbReadTable(yrbs2007, "XXHq")
+yrbs2007 <- read.csv("yrbs2007.csv")
 
 ## 2017
 
-yrbs2017 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/Senior Thesis/XXH2017_YRBS_Data.mdb;"
-)
-
-dbListTables(yrbs2017)
-yrbs2017 <- dbReadTable(yrbs2017, "XXHq")
+yrbs2017 <- read.csv("yrbs2017.csv")
 
 ## 2023
 
-yrbs2023 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/Senior Thesis/XXH2023_YRBS_Data.mdb;"
-)
-
-dbListTables(yrbs2023)
-yrbs2023 <- dbReadTable(yrbs2023, "XXHq")
+yrbs2023 <- read.csv("yrbs2023.csv")
 
 
-# Load data for Kline
-
-## 1997
-
-yrbs1997 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/yrbs1997.mdb;"
-)
-
-dbListTables(yrbs1997)
-yrbs1997 <- dbReadTable(yrbs1997, "XXHq")
-
-## 2007
-
-yrbs2007 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/yrbs2007.mdb;"
-)
-
-dbListTables(yrbs2007)
-yrbs2007 <- dbReadTable(yrbs2007, "XXHq")
-
-## 2017
-
-yrbs2017 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/XXH2017_YRBS_Data.mdb;"
-)
-
-dbListTables(yrbs2017)
-yrbs2017 <- dbReadTable(yrbs2017, "XXHq")
-
-## 2023
-
-yrbs2023 <- dbConnect(
-  odbc(),
-  .connection_string =
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};
-     DBQ=G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work/XXH2023_YRBS_Data.mdb;"
-)
-
-dbListTables(yrbs2023)
-yrbs2023 <- dbReadTable(yrbs2023, "XXHq")
 ####################################################################################
 ############              PHASE 1: CLEAN DATA FOR ANALYSIS              ############
 ####################################################################################
@@ -815,25 +732,61 @@ my_varlist <- c("no_sport", "one_sport", "two_sport", "three_or_more_sport",
                 "native_hawaiian", "multiple_hispanic", "multiple_nonhispanic", "fight", 
                 "binge_drinking", "marijuana_use", "cocaine_use")
 
-### STEP 2: create a new dataset for all variables in varlist in 1997
-yrbs1997_complete_case <- yrbs1997 %>%
-  select(any_of(my_varlist)) %>%
+
+# Variables specific to 1997
+my_varlist_1997 <- c(
+  "no_sport_org",
+  "one_sport_org",
+  "two_sport_org",
+  "three_or_more_sport_org",
+  "other_race"
+)
+
+# Variables used in 2007, 2017, and 2023
+my_varlist_2007_2023 <- c(
+  "native_hawaiian",
+  "multiple_hispanic",
+  "multiple_nonhispanic"
+)
+
+
+### STEP 2: Create a new dataset for each year
+### with only your variables and complete cases
+
+yrbs_complete_case_1997 <- yrbs1997 %>%
+  select(all_of(c(my_varlist, my_varlist_1997))) %>%
   filter(complete.cases(.))
 
-### STEP 3: create a new dataset for all variables in varlist in 2007
-
-yrbs2007_complete_case <- yrbs2007 %>%
-  select(any_of(my_varlist)) %>%
+yrbs_complete_case_2007 <- yrbs2007 %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>%
   filter(complete.cases(.))
 
-### STEP 4: create a new dataset for all variables in varlist in 2017
-
-yrbs2017_complete_case <- yrbs2017 %>%
-  select(any_of(my_varlist)) %>%
+yrbs_complete_case_2017 <- yrbs2017 %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>%
   filter(complete.cases(.))
 
-### STEP 5: create a new dataset for all variables in varlist in 2023
-
-yrbs2023_complete_case <- yrbs2023 %>%
-  select(any_of(my_varlist)) %>%
+yrbs_complete_case_2023 <- yrbs2023 %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>%
   filter(complete.cases(.))
+
+
+### STEP 3: Combine all four years into one dataset
+
+my_dataset <- bind_rows(
+  yrbs_complete_case_1997 %>% mutate(year = 1997),
+  yrbs_complete_case_2007 %>% mutate(year = 2007),
+  yrbs_complete_case_2017 %>% mutate(year = 2017),
+  yrbs_complete_case_2023 %>% mutate(year = 2023)
+)
+
+### STEP 4: Gather summary statistics and confirm valid dataset construction
+
+describe(my_dataset)
+table(my_dataset$year)
+
+####################################################################################
+############              PHASE 3: Descriptive Statistics     ############
+####################################################################################
+# TABLE 1: Use describe command 
+
+describe(my_dataset)
