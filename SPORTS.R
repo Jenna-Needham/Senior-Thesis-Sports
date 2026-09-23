@@ -16,9 +16,9 @@ setwd("G:/My Drive/Senior Thesis/SPORTS/work")
 # set WD for kline
 setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
 
-install.packages('dplyr', repos = 'https://cloud.r-project.org')
-install.packages("psych")
-install.packages("tidyverse")
+#install.packages('dplyr', repos = 'https://cloud.r-project.org')
+#install.packages("psych")
+#install.packages("tidyverse")
 
 library(dplyr)
 library(psych)
@@ -502,7 +502,7 @@ yrbs1997 <- mutate(yrbs1997, fight = ifelse(Q18 >= 2 & Q18 <= 8, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs1997$Q18, yrbs1997$fight)
+table(yrbs1997$Q18, yrbs1997$fight, useNA = "ifany")
 
 
 ## 2007
@@ -564,7 +564,7 @@ yrbs1997 <- mutate(yrbs1997, binge_drinking = ifelse(Q39 >= 2 & Q39 <= 7, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs1997$Q39, yrbs1997$binge_drinking)
+table(yrbs1997$Q39, yrbs1997$binge_drinking, useNA = "ifany")
 
 
 ## 2007
