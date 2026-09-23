@@ -724,13 +724,11 @@ table(yrbs2023$q50, yrbs2023$cocaine_use)
 ############              PHASE 2: CREATE MY DATASET                    ############
 ####################################################################################
 
-### STEP 1: Create a list of variables to keep
+### STEP 1: Create a list of variables to keep across all four years
 
 my_varlist <- c("no_sport", "one_sport", "two_sport", "three_or_more_sport",
-                "no_sport_org", "one_sport_org", "two_sport_org", "three_or_more_sport_org", 
-                "age", "white", "black", "hispanic", "asian", "american_indian", "other_race", 
-                "native_hawaiian", "multiple_hispanic", "multiple_nonhispanic", "fight", 
-                "binge_drinking", "marijuana_use", "cocaine_use")
+                "age", "white", "black", "hispanic", "asian", "american_indian", 
+                "fight", "binge_drinking", "marijuana_use", "cocaine_use")
 
 
 # Variables specific to 1997
@@ -753,24 +751,28 @@ my_varlist_2007_2023 <- c(
 ### STEP 2: Create a new dataset for each year
 ### with only your variables and complete cases
 
-yrbs_complete_case_1997 <- yrbs1997 %>%
-  select(all_of(c(my_varlist, my_varlist_1997))) %>%
-  filter(complete.cases(.))
-
-yrbs_complete_case_2007 <- yrbs2007 %>%
-  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>%
-  filter(complete.cases(.))
-
-yrbs_complete_case_2017 <- yrbs2017 %>%
-  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>%
-  filter(complete.cases(.))
-
-yrbs_complete_case_2023 <- yrbs2023 %>%
-  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>%
-  filter(complete.cases(.))
+yrbs_complete_case_1997 <- yrbs1997 %>% 
+  select(all_of(c(my_varlist, my_varlist_1997))) %>% filter(complete.cases(.))
 
 
-### STEP 3: Combine all four years into one dataset
+yrbs_complete_case_2007 <- yrbs2007 %>% 
+  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>% filter(complete.cases(.))
+
+yrbs_complete_case_2017 <- yrbs2017 %>% 
+  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>% filter(complete.cases(.))
+
+yrbs_complete_case_2023 <- yrbs2023 %>% 
+  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>% filter(complete.cases(.))
+
+## STEP 3: Check the number of complete cases
+
+nrow(yrbs_complete_case_1997) 
+nrow(yrbs_complete_case_2007) 
+nrow(yrbs_complete_case_2017) 
+nrow(yrbs_complete_case_2023)
+
+
+### STEP 4: Combine all four years into one dataset
 
 my_dataset <- bind_rows(
   yrbs_complete_case_1997 %>% mutate(year = 1997),
@@ -787,6 +789,22 @@ table(my_dataset$year)
 ####################################################################################
 ############              PHASE 3: Descriptive Statistics     ############
 ####################################################################################
-# TABLE 1: Use describe command 
 
-describe(my_dataset)
+### TABLE 1: Descriptive statistics for 1997
+
+describe(yrbs_complete_case_1997)
+
+
+### TABLE 2: Descriptive statistics for 2007
+
+describe(yrbs_complete_case_2007)
+
+
+### TABLE 3: Descriptive statistics for 2017
+
+describe(yrbs_complete_case_2017)
+
+
+### TABLE 4: Descriptive statistics for 2023
+
+describe(yrbs_complete_case_2023)
