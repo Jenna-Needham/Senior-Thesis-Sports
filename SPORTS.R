@@ -11,14 +11,14 @@
 
 ### Settings and Packages
 # set WD for Needham
-setwd("G:/My Drive/Senior Thesis/SPORTS/work")
+setwd("G:/.shortcut-targets-by-id/1BNQKSfuws_0ShC-VsiG83yK6DMI5EXrn/SPORTS/work")
 
 # set WD for kline
 setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
 
-#install.packages('dplyr', repos = 'https://cloud.r-project.org')
-#install.packages("psych")
-#install.packages("tidyverse")
+# install.packages('dplyr', repos = 'https://cloud.r-project.org')
+# install.packages("psych")
+# install.packages("tidyverse")
 
 library(dplyr)
 library(psych)
@@ -64,24 +64,14 @@ yrbs2023 <- read.csv("yrbs2023.csv")
 
 table(yrbs1997$Q83)
 
-# STEP 2: Create dummy variables for each category of sports participation
+# STEP 2: Create binary sports participation variables 
 
-yrbs1997 <- mutate(yrbs1997, no_sport = ifelse(Q83 == 1, 1, 0))
-yrbs1997 <- mutate(yrbs1997, one_sport = ifelse(Q83 == 2, 1, 0))
-yrbs1997 <- mutate(yrbs1997, two_sport = ifelse(Q83 == 3, 1, 0))
-yrbs1997 <- mutate(yrbs1997, three_or_more_sport = ifelse(Q83 == 4, 1, 0))
+yrbs1997 <- mutate(yrbs1997, sports_participation = ifelse(Q83 == 1, 0, 1))
 
-# STEP 3: Confirm creation at Q83 and each dummy variable
+# STEP 3: Confirm creation
 
-table(yrbs1997$no_sport)
-table(yrbs1997$one_sport)
-table(yrbs1997$two_sport)
-table(yrbs1997$three_or_more_sport)
-
-table(yrbs1997$Q83, yrbs1997$no_sport)
-table(yrbs1997$Q83, yrbs1997$one_sport)
-table(yrbs1997$Q83, yrbs1997$two_sport)
-table(yrbs1997$Q83, yrbs1997$three_or_more_sport)
+table(yrbs1997$sports_participation)
+table(yrbs1997$Q83, yrbs1997$sports_participation)
 
 ## AMOUNT OF TEAMS PLAYED FOR ORGS OUTSIDE OF SCHOOL
 
@@ -89,70 +79,43 @@ table(yrbs1997$Q83, yrbs1997$three_or_more_sport)
 
 table(yrbs1997$Q84)
 
-# STEP 2: Create dummy variables for each category of sports participation
+# STEP 2: Create binary sports participation variables 
 
-yrbs1997 <- mutate(yrbs1997, no_sport_org = ifelse(Q84 == 1, 1, 0))
-yrbs1997 <- mutate(yrbs1997, one_sport_org = ifelse(Q84 == 2, 1, 0))
-yrbs1997 <- mutate(yrbs1997, two_sport_org = ifelse(Q84 == 3, 1, 0))
-yrbs1997 <- mutate(yrbs1997, three_or_more_sport_org = ifelse(Q84 == 4, 1, 0))
+yrbs1997 <- mutate(yrbs1997, sports_participation_org = ifelse(Q84 == 1, 0, 1))
 
-# STEP 3: Confirm creation at Q84 and each dummy variable
+# STEP 3: Confirm creation
 
-table(yrbs1997$no_sport_org)
-table(yrbs1997$one_sport_org)
-table(yrbs1997$two_sport_org)
-table(yrbs1997$three_or_more_sport_org)
-
-table(yrbs1997$Q84, yrbs1997$no_sport_org)
-table(yrbs1997$Q84, yrbs1997$one_sport_org)
-table(yrbs1997$Q84, yrbs1997$two_sport_org)
-table(yrbs1997$Q84, yrbs1997$three_or_more_sport_org)
+table(yrbs1997$sports_participation_org)
+table(yrbs1997$Q83, yrbs1997$sports_participation_org)
 
 ## 2007
 
 # STEP 1: Examine variable and coding schema 
 
-table(yrbs2007$q83)
+table(yrbs2007$q84)
 
-yrbs2007 <- mutate(yrbs2007, no_sport = ifelse(q83 == 1, 1, 0))
-yrbs2007 <- mutate(yrbs2007, one_sport = ifelse(q83 == 2, 1, 0))
-yrbs2007 <- mutate(yrbs2007, two_sport = ifelse(q83 == 3, 1, 0))
-yrbs2007 <- mutate(yrbs2007, three_or_more_sport = ifelse(q83 == 4, 1, 0))
+# STEP 2: Create binary sports participation variables 
 
-table(yrbs2007$no_sport)
-table(yrbs2007$one_sport)
-table(yrbs2007$two_sport)
-table(yrbs2007$three_or_more_sport)
+yrbs2007 <- mutate(yrbs2007, sports_participation = ifelse(q84 == 1, 0, 1))
 
-table(yrbs2007$q83, yrbs2007$no_sport)
-table(yrbs2007$q83, yrbs2007$one_sport)
-table(yrbs2007$q83, yrbs2007$two_sport)
-table(yrbs2007$q83, yrbs2007$three_or_more_sport)
+# STEP 3: Confirm creation
+
+table(yrbs2007$sports_participation)
+table(yrbs2007$q84, yrbs2007$sports_participation)
 
 ## 2017 
 # STEP 1: Examine variable and coding schema
 
 table(yrbs2017$q83)
 
+# STEP 2: Create binary sports participation variables 
 
-# STEP 2: Create dummy variables for each category of sports participation
+yrbs2017 <- mutate(yrbs2017, sports_participation = ifelse(q83 == 1, 0, 1))
 
-yrbs2017 <- mutate(yrbs2017, no_sport = ifelse(q83 == 1, 1, 0))
-yrbs2017 <- mutate(yrbs2017, one_sport = ifelse(q83 == 2, 1, 0))
-yrbs2017 <- mutate(yrbs2017, two_sport = ifelse(q83 == 3, 1, 0))
-yrbs2017 <- mutate(yrbs2017, three_or_more_sport = ifelse(q83 == 4, 1, 0))
+# STEP 3: Confirm creation
 
-# STEP 3: Confirm creation at q83 and each dummy variable
-
-table(yrbs2017$no_sport)
-table(yrbs2017$one_sport)
-table(yrbs2017$two_sport)
-table(yrbs2017$three_or_more_sport)
-
-table(yrbs2017$q83, yrbs2017$no_sport)
-table(yrbs2017$q83, yrbs2017$one_sport)
-table(yrbs2017$q83, yrbs2017$two_sport)
-table(yrbs2017$q83, yrbs2017$three_or_more_sport)
+table(yrbs2017$sports_participation)
+table(yrbs2017$q83, yrbs2017$sports_participation)
 
 
 ## 2023
@@ -160,24 +123,15 @@ table(yrbs2017$q83, yrbs2017$three_or_more_sport)
 
 table(yrbs2023$q78)
 
-# STEP 2: Create dummy variables for each category of sports participation
+# STEP 2: Create binary sports participation variables 
 
-yrbs2023 <- mutate(yrbs2023, no_sport = ifelse(q78 == 1, 1, 0))
-yrbs2023 <- mutate(yrbs2023, one_sport = ifelse(q78 == 2, 1, 0))
-yrbs2023 <- mutate(yrbs2023, two_sport = ifelse(q78 == 3, 1, 0))
-yrbs2023 <- mutate(yrbs2023, three_or_more_sport = ifelse(q78 == 4, 1, 0))
+yrbs2023 <- mutate(yrbs2023, sports_participation = ifelse(q78 == 1, 0, 1))
 
-# STEP 3: Confirm creation at q78 and each dummy variable
+# STEP 3: Confirm creation
 
-table(yrbs2023$no_sport)
-table(yrbs2023$one_sport)
-table(yrbs2023$two_sport)
-table(yrbs2023$three_or_more_sport)
+table(yrbs2023$sports_participation)
+table(yrbs2023$q78, yrbs2023$sports_participation)
 
-table(yrbs2023$q78, yrbs2023$no_sport)
-table(yrbs2023$q78, yrbs2023$one_sport)
-table(yrbs2023$q78, yrbs2023$two_sport)
-table(yrbs2023$q78, yrbs2023$three_or_more_sport)
 
 
 ############                    DEMOGRAPHIC VARIABLES                   ############
@@ -550,7 +504,7 @@ yrbs2023 <- mutate(yrbs2023, fight = ifelse(q16 >= 2 & q16 <= 8, 1, 0))
 table(yrbs2023$q16, yrbs2023$fight)
 
 ############                    DEPENDENT VARIABLE                    ############
-############                        ALCOHOL                           ############
+############                        ALCOHOL USE                       ############
 
 ## 1997
 
@@ -612,7 +566,7 @@ yrbs2023 <- mutate(yrbs2023, binge_drinking = ifelse(q43 >= 2 & q43 <= 7, 1, 0))
 table(yrbs2023$q43, yrbs2023$binge_drinking)
 
 ############                    DEPENDENT VARIABLE                    ############
-############                        MARIJUANA                         ############
+############                      MARIJUANA USE                       ############
 
 ## 1997
 
@@ -720,31 +674,116 @@ yrbs2023 <- mutate(yrbs2023, cocaine_use = ifelse(q50 >= 2 & q50 <= 6, 1, 0))
 table(yrbs2023$cocaine_use)
 table(yrbs2023$q50, yrbs2023$cocaine_use)
 
+############              DEPENDENT VARIABLE                      ############
+############                CIGARETTE USE                         ############
+
+# 1997
+
+# STEP 1: Examine variable and coding schema
+table(yrbs1997$Q28)
+
+# STEP 2: Create binary variable for lifetime cocaine use
+yrbs1997 <- mutate(yrbs1997, cigarette_use = ifelse(Q28 >= 2 & Q28 <= 7, 1, 0))
+
+# STEP 3: Confirm creation
+table(yrbs1997$cigarette_use)
+table(yrbs1997$Q28, yrbs1997$cigarette_use)
+
+
+# 2007
+
+# STEP 1: Examine variable and coding schema
+table(yrbs2007$q30)
+
+# STEP 2: Create binary variable for lifetime cocaine use
+yrbs2007 <- mutate(yrbs2007, cigarette_use = ifelse(q30 >= 2 & q30 <= 7, 1, 0))
+
+# STEP 3: Confirm creation
+table(yrbs2007$cigarette_use)
+table(yrbs2007$q30, yrbs2007$cigarette_use)
+
+# 2017
+
+# STEP 1: Examine variable and coding schema
+table(yrbs2017$q32)
+
+# STEP 2: Create binary variable for lifetime cocaine use
+yrbs2017 <- mutate(yrbs2017, cigarette_use = ifelse(q32 >= 2 & q32 <= 7, 1, 0))
+
+# STEP 3: Confirm creation
+table(yrbs2017$cigarette_use)
+table(yrbs2017$q32, yrbs2017$cigarette_use)
+
+
+# 2023
+
+# STEP 1: Examine variable and coding schema
+table(yrbs2023$q33)
+
+# STEP 2: Create binary variable for lifetime cocaine use
+yrbs2023 <- mutate(yrbs2023, cigarette_use = ifelse(q33 >= 2 & q32 <= 7, 1, 0))
+
+# STEP 3: Confirm creation
+table(yrbs2023$cigarette_use)
+table(yrbs2023$q33, yrbs2023$cigarette_use)
+
+
+############              DEPENDENT VARIABLE                      ############
+############                VAPING USE                            ############
+
+# Vaping questions were only asked in 2017 and 2023
+
+# 2017
+
+# STEP 1: Examine variable and coding schema
+table(yrbs2017$q35)
+
+# STEP 2: Create binary variable for lifetime cocaine use
+yrbs2017 <- mutate(yrbs2017, vaping_use = ifelse(q35 >= 2 & q35 <= 7, 1, 0))
+
+# STEP 3: Confirm creation
+table(yrbs2017$vaping_use)
+table(yrbs2017$q35, yrbs2017$vaping_use)
+
+
+# 2023
+
+# STEP 1: Examine variable and coding schema
+table(yrbs2023$q36)
+
+# STEP 2: Create binary variable for lifetime cocaine use
+yrbs2023 <- mutate(yrbs2023, vaping_use = ifelse(q36 >= 2 & q36 <= 7, 1, 0))
+
+# STEP 3: Confirm creation
+table(yrbs2023$vaping_use)
+table(yrbs2023$q36, yrbs2023$vaping_use)
+
 ####################################################################################
 ############              PHASE 2: CREATE MY DATASET                    ############
 ####################################################################################
 
 ### STEP 1: Create a list of variables to keep across all four years
 
-my_varlist <- c("no_sport", "one_sport", "two_sport", "three_or_more_sport",
-                "age", "white", "black", "hispanic", "asian", "american_indian", 
-                "fight", "binge_drinking", "marijuana_use", "cocaine_use")
+my_varlist <- c("sports_participation", "age", "white", "black", "hispanic", "asian", "american_indian", 
+                "fight", "binge_drinking", "marijuana_use", "cocaine_use", "cigarette_use")
 
 
 # Variables specific to 1997
 my_varlist_1997 <- c(
-  "no_sport_org",
-  "one_sport_org",
-  "two_sport_org",
-  "three_or_more_sport_org",
+  "sports_participation_org",
   "other_race"
 )
 
 # Variables used in 2007, 2017, and 2023
-my_varlist_2007_2023 <- c(
+my_varlist_2007_2017_2023 <- c(
   "native_hawaiian",
   "multiple_hispanic",
   "multiple_nonhispanic"
+)
+
+# Variables used in 2017 and 20023
+my_varlist_2017_2023 <- c(
+  "vaping_use"
 )
 
 
@@ -756,13 +795,13 @@ yrbs_complete_case_1997 <- yrbs1997 %>%
 
 
 yrbs_complete_case_2007 <- yrbs2007 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>% filter(complete.cases(.))
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>% filter(complete.cases(.))
 
 yrbs_complete_case_2017 <- yrbs2017 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>% filter(complete.cases(.))
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>% filter(complete.cases(.))
 
 yrbs_complete_case_2023 <- yrbs2023 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2023))) %>% filter(complete.cases(.))
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>% filter(complete.cases(.))
 
 ## STEP 3: Check the number of complete cases
 
