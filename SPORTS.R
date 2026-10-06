@@ -782,7 +782,7 @@ table(yrbs2023$vaping_use, yrbs2023$nicotine_use)
 # 2017
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2017$q35)
+table(yrbs2017$q35, useNA = "always")
 
 # STEP 2: Create binary variable for lifetime cocaine use
 yrbs2017 <- mutate(yrbs2017, vaping_use = ifelse(q35 >= 2 & q35 <= 7, 1, 0))
@@ -837,17 +837,21 @@ my_varlist_2017_2023 <- c(
 ### with only your variables and complete cases
 
 yrbs_complete_case_1997 <- yrbs1997 %>% 
-  select(all_of(c(my_varlist, my_varlist_1997))) %>% filter(complete.cases(.))
+  select(all_of(c(my_varlist, my_varlist_1997))) %>% 
+  filter(complete.cases(.))
 
 
 yrbs_complete_case_2007 <- yrbs2007 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>% filter(complete.cases(.))
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>% 
+  filter(complete.cases(.))
 
 yrbs_complete_case_2017 <- yrbs2017 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>% filter(complete.cases(.))
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>%
+  filter(complete.cases(.))
 
 yrbs_complete_case_2023 <- yrbs2023 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>% filter(complete.cases(.))
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>%
+  filter(complete.cases(.))
 
 ## STEP 3: Check the number of complete cases
 
@@ -855,6 +859,13 @@ nrow(yrbs_complete_case_1997)
 nrow(yrbs_complete_case_2007) 
 nrow(yrbs_complete_case_2017) 
 nrow(yrbs_complete_case_2023)
+
+# proportion missing for each year
+missing_97 <- 1 - (nrow(yrbs_complete_case_1997) / nrow(yrbs1997))
+missing_07 <- 1 - (nrow(yrbs_complete_case_2007) / nrow(yrbs2007))
+missing_17 <- 1 - (nrow(yrbs_complete_case_2017) / nrow(yrbs2017))
+missing_23 <- 1 - (nrow(yrbs_complete_case_2023) / nrow(yrbs2023))
+                   
 
 
 ### STEP 4: Combine all four years into one dataset
@@ -893,3 +904,10 @@ describe(yrbs_complete_case_2017)
 ### TABLE 4: Descriptive statistics for 2023
 
 describe(yrbs_complete_case_2023)
+
+
+# figure showing important change trends
+
+
+# set hypotheses; determine appropriate test; and bring model picture 
+# DO CODE LAST! 
