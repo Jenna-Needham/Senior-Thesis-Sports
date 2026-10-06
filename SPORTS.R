@@ -675,19 +675,24 @@ table(yrbs2023$cocaine_use)
 table(yrbs2023$q50, yrbs2023$cocaine_use)
 
 ############              DEPENDENT VARIABLE                      ############
-############                CIGARETTE USE                         ############
+############                NICOTINE USE                         ############
 
 # 1997
 
 # STEP 1: Examine variable and coding schema
 table(yrbs1997$Q28)
 
-# STEP 2: Create binary variable for lifetime cocaine use
+# STEP 2: Create binary variable for cigarette use
 yrbs1997 <- mutate(yrbs1997, cigarette_use = ifelse(Q28 >= 2 & Q28 <= 7, 1, 0))
 
-# STEP 3: Confirm creation
+# STEP 3: Create nicotine use variable
+yrbs1997 <- mutate(yrbs1997, nicotine_use = cigarette_use)
+
+# STEP 4: Confirm creation
+
 table(yrbs1997$cigarette_use)
-table(yrbs1997$Q28, yrbs1997$cigarette_use)
+table(yrbs1997$nicotine_use)
+table(yrbs1997$Q28, yrbs1997$nicotine_use)
 
 
 # 2007
@@ -695,24 +700,47 @@ table(yrbs1997$Q28, yrbs1997$cigarette_use)
 # STEP 1: Examine variable and coding schema
 table(yrbs2007$q30)
 
-# STEP 2: Create binary variable for lifetime cocaine use
+# STEP 2: Create binary variable for cigarette use
 yrbs2007 <- mutate(yrbs2007, cigarette_use = ifelse(q30 >= 2 & q30 <= 7, 1, 0))
 
-# STEP 3: Confirm creation
+# STEP 3: Create nicotine use variable
+yrbs2007 <- mutate(yrbs2007, nicotine_use = cigarette_use)
+
+# STEP 4: Confirm creation
+
 table(yrbs2007$cigarette_use)
-table(yrbs2007$q30, yrbs2007$cigarette_use)
+table(yrbs2007$nicotine_use)
+table(yrbs2007$q30, yrbs1997$nicotine_use)
 
 # 2017
 
 # STEP 1: Examine variable and coding schema
 table(yrbs2017$q32)
 
-# STEP 2: Create binary variable for lifetime cocaine use
+# STEP 2: Create binary variable for cigarette use 
 yrbs2017 <- mutate(yrbs2017, cigarette_use = ifelse(q32 >= 2 & q32 <= 7, 1, 0))
 
-# STEP 3: Confirm creation
+# STEP 3: Examine vaping variable and coding schema
+table(yrbs2017$q35)
+
+# STEP 4: Create binary vaping use variable
+yrbs2017 <- mutate(yrbs2017, vaping_use = ifelse(q35 >= 2 & q35 <= 7, 1, 0))
+
+# STEP 5: Create combined nicotine use variable
+# 1 = cigarette OR vaping use
+# 0 = neither cigarette nor vaping use
+yrbs2017 <- mutate(
+  yrbs2017,
+  nicotine_use = ifelse(cigarette_use == 1 | vaping_use == 1, 1, 0)
+)
+
+# STEP 6: Confirm creation
 table(yrbs2017$cigarette_use)
-table(yrbs2017$q32, yrbs2017$cigarette_use)
+table(yrbs2017$vaping_use)
+table(yrbs2017$nicotine_use)
+
+table(yrbs2017$cigarette_use, yrbs2017$nicotine_use)
+table(yrbs2017$vaping_use, yrbs2017$nicotine_use)
 
 
 # 2023
@@ -720,12 +748,30 @@ table(yrbs2017$q32, yrbs2017$cigarette_use)
 # STEP 1: Examine variable and coding schema
 table(yrbs2023$q33)
 
-# STEP 2: Create binary variable for lifetime cocaine use
-yrbs2023 <- mutate(yrbs2023, cigarette_use = ifelse(q33 >= 2 & q32 <= 7, 1, 0))
+# STEP 2: Create binary cigarette use variable
+yrbs2023 <- mutate(yrbs2023, cigarette_use = ifelse(q33 >= 2 & q33 <= 7, 1, 0))
 
-# STEP 3: Confirm creation
+# STEP 3: Examine vaping variable and coding schema
+table(yrbs2023$q36)
+
+# STEP 4: Create binary vaping use variable
+yrbs2023 <- mutate(yrbs2023, vaping_use = ifelse(q36 >= 2 & q36 <= 7, 1, 0))
+
+# STEP 5: Create combined nicotine use variable
+# 1 = cigarette OR vaping use
+# 0 = neither cigarette nor vaping use
+yrbs2023 <- mutate(
+  yrbs2023,
+  nicotine_use = ifelse(cigarette_use == 1 | vaping_use == 1, 1, 0)
+)
+
+# STEP 6: Confirm creation
 table(yrbs2023$cigarette_use)
-table(yrbs2023$q33, yrbs2023$cigarette_use)
+table(yrbs2023$vaping_use)
+table(yrbs2023$nicotine_use)
+
+table(yrbs2023$cigarette_use, yrbs2023$nicotine_use)
+table(yrbs2023$vaping_use, yrbs2023$nicotine_use)
 
 
 ############              DEPENDENT VARIABLE                      ############
@@ -765,7 +811,7 @@ table(yrbs2023$q36, yrbs2023$vaping_use)
 ### STEP 1: Create a list of variables to keep across all four years
 
 my_varlist <- c("sports_participation", "age", "white", "black", "hispanic", "asian", "american_indian", 
-                "fight", "binge_drinking", "marijuana_use", "cocaine_use", "cigarette_use")
+                "fight", "binge_drinking", "marijuana_use", "cocaine_use", "cigarette_use", "nicotine_")
 
 
 # Variables specific to 1997
