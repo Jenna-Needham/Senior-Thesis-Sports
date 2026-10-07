@@ -1012,6 +1012,7 @@ p_nicotine <- ggplot(
   scale_x_continuous(
     breaks = c(1997, 2007, 2017, 2023)
   ) +
+  ylim(0, 100) +
   theme_minimal()
 
 
@@ -1079,3 +1080,40 @@ combined_trends <- (
 # Display the combined figure
 
 combined_trends
+
+
+
+
+
+####################################################################################
+############              Add weights                     ############
+####################################################################################
+# adding weights will have to be in earlier portions of the code 
+# this note is just a reminder
+
+
+####################################################################################
+############                   Compare our demographics with benchmarks               ############
+####################################################################################
+
+# to what extent is our sample different from the national population of high school students in the U.S.?
+# 1) Look at weighted racial composition in the whole sample 
+# and compare to the weighted racial composition of our selected sample 
+# for example, given missingness
+
+# 2) Compare our weighted racial composition in the whole sample and our selected subsample
+# to a benchmark, like the American Community Survey or the nearest census 
+# i.e., the census for 2000, 2010, 2020.
+# primiarly compare race and gender for benchmarking
+
+
+####################################################################################
+############                   Predict missingness for sports + fighting               ############
+####################################################################################
+
+# create a valid variable equal to 1 when sports is missing and 0 when sports is not missing
+
+# assess whether any of your other covariates are related to this missingness
+
+# Is the data missing completely at random (MCAR), missing at random (MAR), or missing not at random (MNAR)?
+
