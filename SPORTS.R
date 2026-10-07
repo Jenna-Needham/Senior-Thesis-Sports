@@ -19,10 +19,12 @@ setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
 # install.packages('dplyr', repos = 'https://cloud.r-project.org')
 # install.packages("psych")
 # install.packages("tidyverse")
+# install.packages("patchwork")
 
 library(dplyr)
 library(psych)
 library(tidyverse)
+library(patchwork)
 
 
 ### Load Data for Needham
@@ -62,37 +64,60 @@ yrbs2023 <- read.csv("yrbs2023.csv")
 
 # STEP 1: Examine variable and coding schema
 
-table(yrbs1997$Q83)
+table(yrbs1997$Q83, useNA = "ifany")
 
 # STEP 2: Create binary sports participation variables 
 
-yrbs1997 <- mutate(yrbs1997, sports_participation = ifelse(Q83 == 1, 0, 1))
+yrbs1997 <- mutate(
+  yrbs1997,
+  sports_participation_school = ifelse(Q83 == 1, 0, 1)
+)
 
 # STEP 3: Confirm creation
 
-table(yrbs1997$sports_participation)
-table(yrbs1997$Q83, yrbs1997$sports_participation)
+table(yrbs1997$sports_participation_school, useNA = "ifany")
+table(yrbs1997$Q83, yrbs1997$sports_participation_school, useNA = "ifany")
 
 ## AMOUNT OF TEAMS PLAYED FOR ORGS OUTSIDE OF SCHOOL
 
 # STEP 1: Examine variable and coding schema
 
-table(yrbs1997$Q84)
+table(yrbs1997$Q84, useNA = "ifany")
 
 # STEP 2: Create binary sports participation variables 
 
 yrbs1997 <- mutate(yrbs1997, sports_participation_org = ifelse(Q84 == 1, 0, 1))
 
-# STEP 3: Confirm creation
+## COMBINE SCHOOL AND OUTSIDE SPORTS
 
-table(yrbs1997$sports_participation_org)
-table(yrbs1997$Q83, yrbs1997$sports_participation_org)
+# STEP 3: Create overall sports participation variable 
+
+yrbs1997 <- mutate(
+  yrbs1997,
+  sports_participation = case_when(
+    sports_participation_school == 1 |
+      sports_participation_org == 1 ~ 1,
+    sports_participation_school == 0 &
+      sports_participation_org == 0 ~ 0,
+    TRUE ~ NA_real_
+  )
+)
+
+# STEP 4: Confirm creation
+
+table(yrbs1997$sports_participation, useNA = "ifany")
+
+table(
+  yrbs1997$sports_participation_school,
+  yrbs1997$sports_participation_org,
+  useNA = "ifany"
+)
 
 ## 2007
 
 # STEP 1: Examine variable and coding schema 
 
-table(yrbs2007$q84)
+table(yrbs2007$q84, useNA = "ifany")
 
 # STEP 2: Create binary sports participation variables 
 
@@ -100,13 +125,13 @@ yrbs2007 <- mutate(yrbs2007, sports_participation = ifelse(q84 == 1, 0, 1))
 
 # STEP 3: Confirm creation
 
-table(yrbs2007$sports_participation)
-table(yrbs2007$q84, yrbs2007$sports_participation)
+table(yrbs2007$sports_participation, useNA = "ifany")
+table(yrbs2007$q84, yrbs2007$sports_participation, useNA = "ifany")
 
 ## 2017 
 # STEP 1: Examine variable and coding schema
 
-table(yrbs2017$q83)
+table(yrbs2017$q83, useNA = "ifany")
 
 # STEP 2: Create binary sports participation variables 
 
@@ -114,14 +139,14 @@ yrbs2017 <- mutate(yrbs2017, sports_participation = ifelse(q83 == 1, 0, 1))
 
 # STEP 3: Confirm creation
 
-table(yrbs2017$sports_participation)
-table(yrbs2017$q83, yrbs2017$sports_participation)
+table(yrbs2017$sports_participation, useNA = "ifany")
+table(yrbs2017$q83, yrbs2017$sports_participation, useNA = "ifany")
 
 
 ## 2023
 # STEP 1: Examine variable and coding schema
 
-table(yrbs2023$q78)
+table(yrbs2023$q78, useNA = "ifany")
 
 # STEP 2: Create binary sports participation variables 
 
@@ -129,8 +154,8 @@ yrbs2023 <- mutate(yrbs2023, sports_participation = ifelse(q78 == 1, 0, 1))
 
 # STEP 3: Confirm creation
 
-table(yrbs2023$sports_participation)
-table(yrbs2023$q78, yrbs2023$sports_participation)
+table(yrbs2023$sports_participation, useNA = "ifany")
+table(yrbs2023$q78, yrbs2023$sports_participation, useNA = "ifany")
 
 
 
@@ -142,7 +167,7 @@ table(yrbs2023$q78, yrbs2023$sports_participation)
 
 # STEP 1: Examine variable and coding schema
 
-table(yrbs1997$Q1)
+table(yrbs1997$Q1, useNA = "ifany")
 
 # STEP 2: Recode age as a numeric variable
 
@@ -158,14 +183,14 @@ yrbs1997 <- mutate(yrbs1997, age = case_when(
 
 # STEP 3: Confirm recoding
 
-table(yrbs1997$Q1, yrbs1997$age)
+table(yrbs1997$Q1, yrbs1997$age, useNA = "ifany")
 table(yrbs1997$age, useNA = "ifany")
 
 ## 2007 ##
 
 # STEP 1: Examine variable and coding schema
 
-table(yrbs2007$q1)
+table(yrbs2007$q1, useNA = "ifany")
 
 # STEP 2: Recode age as a numeric variable
 
@@ -181,14 +206,14 @@ yrbs2007 <- mutate(yrbs2007, age = case_when(
 
 # STEP 3: Confirm recording
 
-table(yrbs2007$q1, yrbs2007$age)
+table(yrbs2007$q1, yrbs2007$age, useNA = "ifany")
 table(yrbs2007$age, useNA = "ifany")
 
 ## 2017 ##
 
 # STEP 1: Examine variable and coding schema
 
-table(yrbs2017$q1)
+table(yrbs2017$q1, useNA = "ifany")
 
 # STEP 2: Recode age as a numeric variable
 
@@ -204,14 +229,14 @@ yrbs2017 <- mutate(yrbs2017, age = case_when(
 
 # STEP 3: Confirm recoding
 
-table(yrbs2017$q1, yrbs2017$age)
+table(yrbs2017$q1, yrbs2017$age, useNA = "ifany")
 table(yrbs2017$age, useNA = "ifany")
 
 ## 2023 ##
 
 # STEP 1: Examine variable and coding schema
 
-table(yrbs2023$q1)
+table(yrbs2023$q1, useNA = "ifany")
 
 # STEP 2: Recode age as a numeric variable
 
@@ -227,7 +252,7 @@ yrbs2023 <- mutate(yrbs2023, age = case_when(
 
 # STEP 3: Confirm recoding
 
-table(yrbs2023$q1, yrbs2023$age)
+table(yrbs2023$q1, yrbs2023$age, useNA = "ifany")
 table(yrbs2023$age, useNA = "ifany")
 
 
@@ -246,7 +271,7 @@ yrbs1997 <- mutate(yrbs1997, female = ifelse(Q2 == 1, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs1997$Q2, yrbs1997$female)
+table(yrbs1997$Q2, yrbs1997$female, useNA = "ifany")
 
 
 ## 2007
@@ -262,7 +287,7 @@ yrbs2007 <- mutate(yrbs2007, female = ifelse(q2 == 1, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2007$q2, yrbs2007$female)
+table(yrbs2007$q2, yrbs2007$female, useNA = "ifany")
 
 
 ## 2017
@@ -278,7 +303,7 @@ yrbs2017 <- mutate(yrbs2017, female = ifelse(q2 == 1, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2017$q2, yrbs2017$female)
+table(yrbs2017$q2, yrbs2017$female, useNA = "ifany")
 
 
 ## 2023
@@ -294,7 +319,7 @@ yrbs2023 <- mutate(yrbs2023, female = ifelse(q2 == 1, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2023$q2, yrbs2023$female)
+table(yrbs2023$q2, yrbs2023$female, useNA = "ifany")
 
 ### RACE ###
 
@@ -315,19 +340,19 @@ yrbs1997 <- mutate(yrbs1997, other_race = ifelse(Q4 == 6, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs1997$white)
-table(yrbs1997$black)
-table(yrbs1997$hispanic)
-table(yrbs1997$asian)
-table(yrbs1997$american_indian)
-table(yrbs1997$other_race)
+table(yrbs1997$white, useNA = "ifany")
+table(yrbs1997$black, useNA = "ifany")
+table(yrbs1997$hispanic, useNA = "ifany")
+table(yrbs1997$asian, useNA = "ifany")
+table(yrbs1997$american_indian, useNA = "ifany")
+table(yrbs1997$other_race, useNA = "ifany")
 
-table(yrbs1997$Q4, yrbs1997$white)
-table(yrbs1997$Q4, yrbs1997$black)
-table(yrbs1997$Q4, yrbs1997$hispanic)
-table(yrbs1997$Q4, yrbs1997$asian)
-table(yrbs1997$Q4, yrbs1997$american_indian)
-table(yrbs1997$Q4, yrbs1997$other_race)
+table(yrbs1997$Q4, yrbs1997$white, useNA = "ifany")
+table(yrbs1997$Q4, yrbs1997$black, useNA = "ifany")
+table(yrbs1997$Q4, yrbs1997$hispanic, useNA = "ifany")
+table(yrbs1997$Q4, yrbs1997$asian, useNA = "ifany")
+table(yrbs1997$Q4, yrbs1997$american_indian, useNA = "ifany")
+table(yrbs1997$Q4, yrbs1997$other_race, useNA = "ifany")
 
 ## 2007
 
@@ -349,23 +374,23 @@ yrbs2007 <- mutate(yrbs2007, multiple_nonhispanic = ifelse(raceeth == 8, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2007$american_indian)
-table(yrbs2007$asian)
-table(yrbs2007$black)
-table(yrbs2007$native_hawaiian)
-table(yrbs2007$white)
-table(yrbs2007$hispanic)
-table(yrbs2007$multiple_hispanic)
-table(yrbs2007$multiple_nonhispanic)
+table(yrbs2007$american_indian, useNA = "ifany")
+table(yrbs2007$asian, useNA = "ifany")
+table(yrbs2007$black, useNA = "ifany")
+table(yrbs2007$native_hawaiian, useNA = "ifany")
+table(yrbs2007$white, useNA = "ifany")
+table(yrbs2007$hispanic, useNA = "ifany")
+table(yrbs2007$multiple_hispanic, useNA = "ifany")
+table(yrbs2007$multiple_nonhispanic, useNA = "ifany")
 
-table(yrbs2007$raceeth, yrbs2007$american_indian)
-table(yrbs2007$raceeth, yrbs2007$asian)
-table(yrbs2007$raceeth, yrbs2007$black)
-table(yrbs2007$raceeth, yrbs2007$native_hawaiian)
-table(yrbs2007$raceeth, yrbs2007$white)
-table(yrbs2007$raceeth, yrbs2007$hispanic)
-table(yrbs2007$raceeth, yrbs2007$multiple_hispanic)
-table(yrbs2007$raceeth, yrbs2007$multiple_nonhispanic)
+table(yrbs2007$raceeth, yrbs2007$american_indian, useNA = "ifany")
+table(yrbs2007$raceeth, yrbs2007$asian, useNA = "ifany")
+table(yrbs2007$raceeth, yrbs2007$black, useNA = "ifany")
+table(yrbs2007$raceeth, yrbs2007$native_hawaiian, useNA = "ifany")
+table(yrbs2007$raceeth, yrbs2007$white, useNA = "ifany")
+table(yrbs2007$raceeth, yrbs2007$hispanic, useNA = "ifany")
+table(yrbs2007$raceeth, yrbs2007$multiple_hispanic, useNA = "ifany")
+table(yrbs2007$raceeth, yrbs2007$multiple_nonhispanic, useNA = "ifany")
 
 ## 2017
 
@@ -386,23 +411,23 @@ yrbs2017 <- mutate(yrbs2017, multiple_nonhispanic = ifelse(raceeth == 8, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2017$american_indian)
-table(yrbs2017$asian)
-table(yrbs2017$black)
-table(yrbs2017$native_hawaiian)
-table(yrbs2017$white)
-table(yrbs2017$hispanic)
-table(yrbs2017$multiple_hispanic)
-table(yrbs2017$multiple_nonhispanic)
+table(yrbs2017$american_indian, useNA = "ifany")
+table(yrbs2017$asian, useNA = "ifany")
+table(yrbs2017$black, useNA = "ifany")
+table(yrbs2017$native_hawaiian, useNA = "ifany")
+table(yrbs2017$white, useNA = "ifany")
+table(yrbs2017$hispanic, useNA = "ifany")
+table(yrbs2017$multiple_hispanic, useNA = "ifany")
+table(yrbs2017$multiple_nonhispanic, useNA = "ifany")
 
-table(yrbs2017$raceeth, yrbs2017$american_indian)
-table(yrbs2017$raceeth, yrbs2017$asian)
-table(yrbs2017$raceeth, yrbs2017$black)
-table(yrbs2017$raceeth, yrbs2017$native_hawaiian)
-table(yrbs2017$raceeth, yrbs2017$white)
-table(yrbs2017$raceeth, yrbs2017$hispanic)
-table(yrbs2017$raceeth, yrbs2017$multiple_hispanic)
-table(yrbs2017$raceeth, yrbs2017$multiple_nonhispanic)
+table(yrbs2017$raceeth, yrbs2017$american_indian, useNA = "ifany")
+table(yrbs2017$raceeth, yrbs2017$asian, useNA = "ifany")
+table(yrbs2017$raceeth, yrbs2017$black, useNA = "ifany")
+table(yrbs2017$raceeth, yrbs2017$native_hawaiian, useNA = "ifany")
+table(yrbs2017$raceeth, yrbs2017$white, useNA = "ifany")
+table(yrbs2017$raceeth, yrbs2017$hispanic, useNA = "ifany")
+table(yrbs2017$raceeth, yrbs2017$multiple_hispanic, useNA = "ifany")
+table(yrbs2017$raceeth, yrbs2017$multiple_nonhispanic, useNA = "ifany")
 
 ## 2023
 
@@ -423,23 +448,23 @@ yrbs2023 <- mutate(yrbs2023, multiple_nonhispanic = ifelse(raceeth == 8, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2023$american_indian)
-table(yrbs2023$asian)
-table(yrbs2023$black)
-table(yrbs2023$native_hawaiian)
-table(yrbs2023$white)
-table(yrbs2023$hispanic)
-table(yrbs2023$multiple_hispanic)
-table(yrbs2023$multiple_nonhispanic)
+table(yrbs2023$american_indian, useNA = "ifany")
+table(yrbs2023$asian, useNA = "ifany")
+table(yrbs2023$black, useNA = "ifany")
+table(yrbs2023$native_hawaiian, useNA = "ifany")
+table(yrbs2023$white, useNA = "ifany")
+table(yrbs2023$hispanic, useNA = "ifany")
+table(yrbs2023$multiple_hispanic, useNA = "ifany")
+table(yrbs2023$multiple_nonhispanic, useNA = "ifany")
 
-table(yrbs2023$raceeth, yrbs2023$american_indian)
-table(yrbs2023$raceeth, yrbs2023$asian)
-table(yrbs2023$raceeth, yrbs2023$black)
-table(yrbs2023$raceeth, yrbs2023$native_hawaiian)
-table(yrbs2023$raceeth, yrbs2023$white)
-table(yrbs2023$raceeth, yrbs2023$hispanic)
-table(yrbs2023$raceeth, yrbs2023$multiple_hispanic)
-table(yrbs2023$raceeth, yrbs2023$multiple_nonhispanic)
+table(yrbs2023$raceeth, yrbs2023$american_indian, useNA = "ifany")
+table(yrbs2023$raceeth, yrbs2023$asian, useNA = "ifany")
+table(yrbs2023$raceeth, yrbs2023$black, useNA = "ifany")
+table(yrbs2023$raceeth, yrbs2023$native_hawaiian, useNA = "ifany")
+table(yrbs2023$raceeth, yrbs2023$white, useNA = "ifany")
+table(yrbs2023$raceeth, yrbs2023$hispanic, useNA = "ifany")
+table(yrbs2023$raceeth, yrbs2023$multiple_hispanic, useNA = "ifany")
+table(yrbs2023$raceeth, yrbs2023$multiple_nonhispanic, useNA = "ifany")
 
 ############                    DEPENDENT VARIABLES                   ############
 ############                        FIGHTING                          ############
@@ -471,7 +496,7 @@ yrbs2007 <- mutate(yrbs2007, fight = ifelse(q18 >= 2 & q18 <= 8, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2007$q18, yrbs2007$fight)
+table(yrbs2007$q18, yrbs2007$fight, useNA = "ifany")
 
 
 ## 2017
@@ -486,7 +511,7 @@ yrbs2017 <- mutate(yrbs2017, fight = ifelse(q17 >= 2 & q17 <= 8, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2017$q17, yrbs2017$fight)
+table(yrbs2017$q17, yrbs2017$fight, useNA = "ifany")
 
 
 ## 2023
@@ -501,7 +526,7 @@ yrbs2023 <- mutate(yrbs2023, fight = ifelse(q16 >= 2 & q16 <= 8, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2023$q16, yrbs2023$fight)
+table(yrbs2023$q16, yrbs2023$fight, useNA = "ifany")
 
 ############                    DEPENDENT VARIABLE                    ############
 ############                        ALCOHOL USE                       ############
@@ -533,7 +558,7 @@ yrbs2007 <- mutate(yrbs2007, binge_drinking = ifelse(q42 >= 2 & q42 <= 7, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2007$q42, yrbs2007$binge_drinking)
+table(yrbs2007$q42, yrbs2007$binge_drinking, useNA = "ifany")
 
 
 ## 2017
@@ -548,7 +573,7 @@ yrbs2017 <- mutate(yrbs2017, binge_drinking = ifelse(q44 >= 2 & q44 <= 7, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2017$q44, yrbs2017$binge_drinking)
+table(yrbs2017$q44, yrbs2017$binge_drinking, useNA = "ifany")
 
 
 ## 2023
@@ -563,7 +588,7 @@ yrbs2023 <- mutate(yrbs2023, binge_drinking = ifelse(q43 >= 2 & q43 <= 7, 1, 0))
 
 # STEP 3: Confirm creation
 
-table(yrbs2023$q43, yrbs2023$binge_drinking)
+table(yrbs2023$q43, yrbs2023$binge_drinking, useNA = "ifany")
 
 ############                    DEPENDENT VARIABLE                    ############
 ############                      MARIJUANA USE                       ############
@@ -571,53 +596,53 @@ table(yrbs2023$q43, yrbs2023$binge_drinking)
 ## 1997
 
 # STEP 1: Examine variable and coding schema
-table(yrbs1997$Q43)
+table(yrbs1997$Q43, useNA = "ifany")
 
 # STEP 2: Create binary variable for marijuana use
 yrbs1997 <- mutate(yrbs1997, marijuana_use = ifelse(Q43 >= 2 & Q43 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs1997$marijuana_use)
-table(yrbs1997$Q43, yrbs1997$marijuana_use)
+table(yrbs1997$marijuana_use, useNA = "ifany")
+table(yrbs1997$Q43, yrbs1997$marijuana_use, useNA = "ifany")
 
 
 ## 2007
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2007$q47)
+table(yrbs2007$q47, useNA = "ifany")
 
 # STEP 2: Create binary variable for marijuana use
 yrbs2007 <- mutate(yrbs2007, marijuana_use = ifelse(q47 >= 2 & q47 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs2007$marijuana_use)
-table(yrbs2007$q47, yrbs2007$marijuana_use)
+table(yrbs2007$marijuana_use, useNA = "ifany")
+table(yrbs2007$q47, yrbs2007$marijuana_use, useNA = "ifany")
 
 
 ## 2017
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2017$q48)
+table(yrbs2017$q48, useNA = "ifany")
 
 # STEP 2: Create binary variable for marijuana use
 yrbs2017 <- mutate(yrbs2017, marijuana_use = ifelse(q48 >= 2 & q48 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs2017$marijuana_use)
-table(yrbs2017$q48, yrbs2017$marijuana_use)
+table(yrbs2017$marijuana_use, useNA = "ifany")
+table(yrbs2017$q48, yrbs2017$marijuana_use, useNA = "ifany")
 
 
 ## 2023
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2023$q48)
+table(yrbs2023$q48, useNA = "ifany")
 
 # STEP 2: Create binary variable for marijuana use
 yrbs2023 <- mutate(yrbs2023, marijuana_use = ifelse(q48 >= 2 & q48 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs2023$marijuana_use)
-table(yrbs2023$q48, yrbs2023$marijuana_use)
+table(yrbs2023$marijuana_use, useNA = "ifany")
+table(yrbs2023$q48, yrbs2023$marijuana_use, useNA = "ifany")
 
 
 ############              DEPENDENT VARIABLE                      ############
@@ -626,197 +651,150 @@ table(yrbs2023$q48, yrbs2023$marijuana_use)
 ## 1997
 
 # STEP 1: Examine variable and coding schema
-table(yrbs1997$Q48)
+table(yrbs1997$Q48, useNA = "ifany")
 
 # STEP 2: Create binary variable for lifetime cocaine use
 yrbs1997 <- mutate(yrbs1997, cocaine_use = ifelse(Q48 >= 2 & Q48 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs1997$cocaine_use)
-table(yrbs1997$Q48, yrbs1997$cocaine_use)
+table(yrbs1997$cocaine_use, useNA = "ifany")
+table(yrbs1997$Q48, yrbs1997$cocaine_use, useNA = "ifany")
 
 
 ## 2007
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2007$q49)
+table(yrbs2007$q49, useNA = "ifany")
 
 # STEP 2: Create binary variable for lifetime cocaine use
 yrbs2007 <- mutate(yrbs2007, cocaine_use = ifelse(q49 >= 2 & q49 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs2007$cocaine_use)
-table(yrbs2007$q49, yrbs2007$cocaine_use)
+table(yrbs2007$cocaine_use, useNA = "ifany")
+table(yrbs2007$q49, yrbs2007$cocaine_use, useNA = "ifany")
 
 
 ## 2017
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2017$q49)
+table(yrbs2017$q49, useNA = "ifany")
 
 # STEP 2: Create binary variable for lifetime cocaine use
 yrbs2017 <- mutate(yrbs2017, cocaine_use = ifelse(q49 >= 2 & q49 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs2017$cocaine_use)
-table(yrbs2017$q49, yrbs2017$cocaine_use)
+table(yrbs2017$cocaine_use, useNA = "ifany")
+table(yrbs2017$q49, yrbs2017$cocaine_use, useNA = "ifany")
 
 
 ## 2023
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2023$q50)
+table(yrbs2023$q50, useNA = "ifany")
 
 # STEP 2: Create binary variable for lifetime cocaine use
 yrbs2023 <- mutate(yrbs2023, cocaine_use = ifelse(q50 >= 2 & q50 <= 6, 1, 0))
 
 # STEP 3: Confirm creation
-table(yrbs2023$cocaine_use)
-table(yrbs2023$q50, yrbs2023$cocaine_use)
+table(yrbs2023$cocaine_use, useNA = "ifany")
+table(yrbs2023$q50, yrbs2023$cocaine_use, useNA = "ifany")
 
 ############              DEPENDENT VARIABLE                      ############
 ############                NICOTINE USE                         ############
 
-# 1997
+## 1997
 
 # STEP 1: Examine variable and coding schema
-table(yrbs1997$Q28)
 
-# STEP 2: Create binary variable for cigarette use
-yrbs1997 <- mutate(yrbs1997, cigarette_use = ifelse(Q28 >= 2 & Q28 <= 7, 1, 0))
+table(yrbs1997$Q28, useNA = "ifany")
 
-# STEP 3: Create nicotine use variable
-yrbs1997 <- mutate(yrbs1997, nicotine_use = cigarette_use)
+# STEP 2: Create binary variable for nicotine use
 
-# STEP 4: Confirm creation
+yrbs1997 <- mutate(yrbs1997, nicotine_use = ifelse(Q28 >= 2 & Q28 <= 7, 1, 0))
 
-table(yrbs1997$cigarette_use)
-table(yrbs1997$nicotine_use)
-table(yrbs1997$Q28, yrbs1997$nicotine_use)
+# STEP 3: Confirm creation
+
+table(yrbs1997$nicotine_use, useNA = "ifany")
+table(yrbs1997$Q28, yrbs1997$nicotine_use, useNA = "ifany")
 
 
-# 2007
+## 2007
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2007$q30)
 
-# STEP 2: Create binary variable for cigarette use
-yrbs2007 <- mutate(yrbs2007, cigarette_use = ifelse(q30 >= 2 & q30 <= 7, 1, 0))
+table(yrbs2007$q30, useNA = "ifany")
 
-# STEP 3: Create nicotine use variable
-yrbs2007 <- mutate(yrbs2007, nicotine_use = cigarette_use)
+# STEP 2: Create binary variable for nicotine use
 
-# STEP 4: Confirm creation
+yrbs2007 <- mutate(yrbs2007, nicotine_use = ifelse(q30 >= 2 & q30 <= 7, 1, 0))
 
-table(yrbs2007$cigarette_use)
-table(yrbs2007$nicotine_use)
-table(yrbs2007$q30, yrbs1997$nicotine_use)
+# STEP 3: Confirm creation
 
-# 2017
+table(yrbs2007$nicotine_use, useNA = "ifany")
+table(yrbs2007$q30, yrbs2007$nicotine_use, useNA = "ifany")
+
+## 2017
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2017$q32)
 
-# STEP 2: Create binary variable for cigarette use 
-yrbs2017 <- mutate(yrbs2017, cigarette_use = ifelse(q32 >= 2 & q32 <= 7, 1, 0))
+table(yrbs2017$q32, useNA = "ifany")
+table(yrbs2017$q35, useNA = "ifany")
 
-# STEP 3: Examine vaping variable and coding schema
-table(yrbs2017$q35)
-
-# STEP 4: Create binary vaping use variable
-yrbs2017 <- mutate(yrbs2017, vaping_use = ifelse(q35 >= 2 & q35 <= 7, 1, 0))
-
-# STEP 5: Create combined nicotine use variable
+# STEP 2: Create binary variable for nicotine use
 # 1 = cigarette OR vaping use
 # 0 = neither cigarette nor vaping use
-yrbs2017 <- mutate(
-  yrbs2017,
-  nicotine_use = ifelse(cigarette_use == 1 | vaping_use == 1, 1, 0)
-)
 
-# STEP 6: Confirm creation
-table(yrbs2017$cigarette_use)
-table(yrbs2017$vaping_use)
+yrbs2017 <- mutate(yrbs2017, nicotine_use = ifelse(
+  (q32 >= 2 & q32 <= 7) | (q35 >= 2 & q35 <= 7),
+  1,
+  0
+))
+
+# STEP 3: Confirm creation
+
 table(yrbs2017$nicotine_use)
+table(yrbs2017$q32, yrbs2017$nicotine_use, useNA = "ifany")
+table(yrbs2017$q35, yrbs2017$nicotine_use, useNA = "ifany")
 
-table(yrbs2017$cigarette_use, yrbs2017$nicotine_use)
-table(yrbs2017$vaping_use, yrbs2017$nicotine_use)
-
-
-# 2023
+## 2023
 
 # STEP 1: Examine variable and coding schema
-table(yrbs2023$q33)
 
-# STEP 2: Create binary cigarette use variable
-yrbs2023 <- mutate(yrbs2023, cigarette_use = ifelse(q33 >= 2 & q33 <= 7, 1, 0))
+table(yrbs2023$q33, useNA = "ifany")
+table(yrbs2023$q36, useNA = "ifany")
 
-# STEP 3: Examine vaping variable and coding schema
-table(yrbs2023$q36)
-
-# STEP 4: Create binary vaping use variable
-yrbs2023 <- mutate(yrbs2023, vaping_use = ifelse(q36 >= 2 & q36 <= 7, 1, 0))
-
-# STEP 5: Create combined nicotine use variable
+# STEP 2: Create binary variable for nicotine use
 # 1 = cigarette OR vaping use
 # 0 = neither cigarette nor vaping use
-yrbs2023 <- mutate(
-  yrbs2023,
-  nicotine_use = ifelse(cigarette_use == 1 | vaping_use == 1, 1, 0)
-)
 
-# STEP 6: Confirm creation
-table(yrbs2023$cigarette_use)
-table(yrbs2023$vaping_use)
+yrbs2023 <- mutate(yrbs2023, nicotine_use = ifelse(
+  (q33 >= 2 & q33 <= 7) | (q36 >= 2 & q36 <= 7),
+  1,
+  0
+))
+
+# STEP 3: Confirm creation
+
 table(yrbs2023$nicotine_use)
+table(yrbs2023$q33, yrbs2023$nicotine_use, useNA = "ifany")
+table(yrbs2023$q36, yrbs2023$nicotine_use, useNA = "ifany")
 
-table(yrbs2023$cigarette_use, yrbs2023$nicotine_use)
-table(yrbs2023$vaping_use, yrbs2023$nicotine_use)
-
-
-############              DEPENDENT VARIABLE                      ############
-############                VAPING USE                            ############
-
-# Vaping questions were only asked in 2017 and 2023
-
-# 2017
-
-# STEP 1: Examine variable and coding schema
-table(yrbs2017$q35, useNA = "always")
-
-# STEP 2: Create binary variable for lifetime cocaine use
-yrbs2017 <- mutate(yrbs2017, vaping_use = ifelse(q35 >= 2 & q35 <= 7, 1, 0))
-
-# STEP 3: Confirm creation
-table(yrbs2017$vaping_use)
-table(yrbs2017$q35, yrbs2017$vaping_use)
-
-
-# 2023
-
-# STEP 1: Examine variable and coding schema
-table(yrbs2023$q36)
-
-# STEP 2: Create binary variable for lifetime cocaine use
-yrbs2023 <- mutate(yrbs2023, vaping_use = ifelse(q36 >= 2 & q36 <= 7, 1, 0))
-
-# STEP 3: Confirm creation
-table(yrbs2023$vaping_use)
-table(yrbs2023$q36, yrbs2023$vaping_use)
 
 ####################################################################################
 ############              PHASE 2: CREATE MY DATASET                    ############
 ####################################################################################
 
-### STEP 1: Create a list of variables to keep across all four years
+## STEP 1: Create a list of variables to keep across all four years
 
-my_varlist <- c("sports_participation", "age", "white", "black", "hispanic", "asian", "american_indian", 
-                "fight", "binge_drinking", "marijuana_use", "cocaine_use", "cigarette_use", "nicotine_")
+my_varlist <- c(
+  "sports_participation", "age", "white", "black", "hispanic", "asian", 
+  "american_indian", "fight", "binge_drinking", "marijuana_use", 
+  "cocaine_use", "nicotine_use"
+)
 
 
 # Variables specific to 1997
 my_varlist_1997 <- c(
-  "sports_participation_org",
   "other_race"
 )
 
@@ -825,11 +803,6 @@ my_varlist_2007_2017_2023 <- c(
   "native_hawaiian",
   "multiple_hispanic",
   "multiple_nonhispanic"
-)
-
-# Variables used in 2017 and 20023
-my_varlist_2017_2023 <- c(
-  "vaping_use"
 )
 
 
@@ -846,11 +819,11 @@ yrbs_complete_case_2007 <- yrbs2007 %>%
   filter(complete.cases(.))
 
 yrbs_complete_case_2017 <- yrbs2017 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>%
   filter(complete.cases(.))
 
 yrbs_complete_case_2023 <- yrbs2023 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023, my_varlist_2017_2023))) %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>%
   filter(complete.cases(.))
 
 ## STEP 3: Check the number of complete cases
@@ -911,3 +884,198 @@ describe(yrbs_complete_case_2023)
 
 # set hypotheses; determine appropriate test; and bring model picture 
 # DO CODE LAST! 
+
+####################################################################################
+############              PHASE 4: Figures and Trends                  ############
+####################################################################################
+
+## Deviant Behaviors
+
+# STEP 1: Calculate the percentage of respondents reporting each deviant behavior (fight/binge_drinking/marijuana_use/cocaine_use) each year
+
+deviance_trends <- my_dataset %>%
+  group_by(year) %>%
+  summarise(
+    fight = mean(fight) * 100,
+    binge_drinking = mean(binge_drinking) * 100,
+    marijuana_use = mean(marijuana_use) * 100,
+    cocaine_use = mean(cocaine_use) * 100
+  )
+
+# STEP 2: Reshape data from wide to long format in order to create a separate line for each behavior on the same graph
+
+deviance_trends <- pivot_longer(
+  deviance_trends,
+  cols = c(fight, binge_drinking, marijuana_use, cocaine_use),
+  names_to = "behavior",
+  values_to = "percent"
+)
+
+# STEP 3: Create a line graph showing trends for all four deviant behaviors
+
+p_deviance <- ggplot(
+  deviance_trends,
+  aes(
+    x = year,
+    y = percent,
+    color = behavior,
+    group = behavior
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Deviant Behaviors",
+    x = "Year",
+    y = "Percent Reporting Behavior",
+    color = "Behavior"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  scale_color_brewer(
+    palette = "Dark2"
+  ) +
+  theme_minimal()
+
+## Sports
+
+# STEP 1: Calculate the percentage of respondents participating in sports in each year
+
+sports_trends <- my_dataset %>%
+  group_by(year) %>%
+  summarise(
+    percent = mean(sports_participation) * 100
+  )
+
+# STEP 2: Create a line graph showing changes in sports participation across four survey years
+
+p_sports <- ggplot(
+  sports_trends,
+  aes(
+    x = year,
+    y = percent
+  )
+) +
+  geom_line(
+    linewidth = 1,
+    color = "steelblue"
+  ) +
+  geom_point(
+    size = 2,
+    color = "steelblue"
+  ) +
+  labs(
+    title = "Sports Participation",
+    x = "Year",
+    y = "Percent Participating in Sports"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  theme_minimal()
+
+
+
+## Nicotine
+
+# STEP 1: Calculate the percentage of respondents reporting nicotine use in each year
+
+nicotine_trends <- my_dataset %>%
+  group_by(year) %>%
+  summarise(
+    percent = mean(nicotine_use) * 100
+  )
+
+# STEP 2: Create a line graph showing changes in nicotine use across the four years
+
+p_nicotine <- ggplot(
+  nicotine_trends,
+  aes(
+    x = year,
+    y = percent
+  )
+) +
+  geom_line(
+    linewidth = 1,
+    color = "firebrick"
+  ) +
+  geom_point(
+    size = 2,
+    color = "firebrick"
+  ) +
+  labs(
+    title = "Nicotine Use",
+    x = "Year",
+    y = "Percent Reporting Nicotine Use"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  theme_minimal()
+
+
+## Race
+
+# STEP 1: Calculate the percentage of respondents in each race category within each survey year
+
+race_trends <- my_dataset %>%
+  group_by(year) %>%
+  summarise(
+    white = mean(white) * 100,
+    black = mean(black) * 100,
+    hispanic = mean(hispanic) * 100,
+    asian = mean(asian) * 100,
+    american_indian = mean(american_indian) * 100
+  )
+
+# STEP 2: Reshape the race data from wide to long format in order to create a separate stacked area for each race category
+
+race_trends <- race_trends %>%
+  pivot_longer(
+    cols = -year,
+    names_to = "race",
+    values_to = "percent"
+  )
+
+# STEP 3: Create a stacked area chart showing changes in the racial composition of the sample across survey years
+
+p_race <- ggplot(
+  race_trends,
+  aes(
+    x = year,
+    y = percent,
+    fill = race
+  )
+) +
+  geom_area(position = "stack") +
+  labs(
+    title = "Race Composition",
+    x = "Year",
+    y = "Percent",
+    fill = "Race"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  scale_fill_brewer(
+    palette = "Set2"
+  ) +
+  theme_minimal()
+
+
+####################################################################################
+############                   COMBINE ALL FOUR GRAPHS               ############
+####################################################################################
+
+# Use patchwork to arrange the four graphs into one 2 x 2 figure
+
+combined_trends <- (
+  p_deviance | p_sports
+) / (
+  p_nicotine | p_race
+)
+
+# Display the combined figure
+
+combined_trends
