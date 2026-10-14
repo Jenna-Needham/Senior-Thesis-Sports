@@ -781,16 +781,101 @@ table(yrbs2023$q36, yrbs2023$nicotine_use, useNA = "ifany")
 
 ############              WEIGHTS, STRATUMS, PSUS           ############
 
-# Standardize the weight variable name across all four years
+# Standardize weight, stratum, and PSU variable names
 
-yrbs1997 <- rename(yrbs1997, weight = WEIGHT)
+# check names of yrbs1997
 
-# Check the weight variables
+yrbs1997 <- rename(
+  yrbs1997,
+  weight = WEIGHT,
+  stratum = STRATUM,
+  psu = PSU
+)
+
+# Check the weight, straum, and psu variables for each year
+
+# Weight
 
 summary(yrbs1997$weight)
 summary(yrbs2007$weight)
 summary(yrbs2017$weight)
 summary(yrbs2023$weight)
+
+# Stratum
+
+summary(yrbs1997$stratum)
+summary(yrbs2007$stratum)
+summary(yrbs2017$stratum)
+summary(yrbs2023$stratum)
+
+# PSU
+
+summary(yrbs1997$psu)
+summary(yrbs2007$psu)
+summary(yrbs2017$psu)
+summary(yrbs2023$psu)
+
+
+# Create a common race/ethnicity variable for 1997
+
+yrbs1997 <- mutate(
+  yrbs1997,
+  race_group = case_when(
+    Q4 == 1 ~ "White",
+    Q4 == 2 ~ "Black",
+    Q4 == 3 ~ "Hispanic",
+    Q4 == 4 ~ "Asian/Pacific Islander",
+    Q4 == 5 ~ "American Indian",
+    Q4 == 6 ~ "Other/Multiracial",
+    TRUE ~ NA_character_
+  )
+)
+
+# Create a common race/ethnicity variable for 2007
+
+yrbs2007 <- mutate(
+  yrbs2007,
+  race_group = case_when(
+    raceeth == 5 ~ "White",
+    raceeth == 3 ~ "Black",
+    raceeth %in% c(6, 7) ~ "Hispanic",
+    raceeth %in% c(2, 4) ~ "Asian/Pacific Islander",
+    raceeth == 1 ~ "American Indian/Alaska Native",
+    raceeth == 8 ~ "Other/Multiracial",
+    TRUE ~ NA_character_
+  )
+)
+
+# Create a common race/ethnicity variable for 2017
+
+yrbs2017 <- mutate(
+  yrbs2017,
+  race_group = case_when(
+    raceeth == 5 ~ "White",
+    raceeth == 3 ~ "Black",
+    raceeth %in% c(6, 7) ~ "Hispanic",
+    raceeth %in% c(2, 4) ~ "Asian/Pacific Islander",
+    raceeth == 1 ~ "American Indian/Alaska Native",
+    raceeth == 8 ~ "Other/Multiracial",
+    TRUE ~ NA_character_
+  )
+)
+
+# Create a common race/ethnicity variable for 2023
+
+yrbs2023 <- mutate(
+  yrbs2023,
+  race_group = case_when(
+    raceeth == 5 ~ "White",
+    raceeth == 3 ~ "Black",
+    raceeth %in% c(6, 7) ~ "Hispanic",
+    raceeth %in% c(2, 4) ~ "Asian/Pacific Islander",
+    raceeth == 1 ~ "American Indian/Alaska Native",
+    raceeth == 8 ~ "Other/Multiracial",
+    TRUE ~ NA_character_
+  )
+)
+
 
 
 ####################################################################################
@@ -802,7 +887,7 @@ summary(yrbs2023$weight)
 my_varlist <- c(
   "sports_participation", "age", "white", "black", "hispanic", "asian", 
   "american_indian", "fight", "binge_drinking", "marijuana_use", 
-  "cocaine_use", "nicotine_use", "race_group", "weight", "stratum", "psu"
+  "cocaine_use", "nicotine_use", "race_group", "weight", "stratum", "psu", "female"
 )
 
 
@@ -862,6 +947,94 @@ my_dataset <- bind_rows(
   yrbs_complete_case_2017 %>% mutate(year = 2017),
   yrbs_complete_case_2023 %>% mutate(year = 2023)
 )
+
+
+
+# Combine original samples and complete-case samples (weighted values)
+
+demographic_samples <- bind_rows(
+  yrbs1997 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 1997, sample = "Original"),
+  
+  yrbs_complete_case_1997 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 1997, sample = "Complete cases"),
+  
+  yrbs2007 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2007, sample = "Original"),
+  
+  yrbs_complete_case_2007 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2007, sample = "Complete cases"),
+  
+  yrbs2017 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2017, sample = "Original"),
+  
+  yrbs_complete_case_2017 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2017, sample = "Complete cases"),
+  
+  yrbs2023 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2023, sample = "Original"),
+  
+  yrbs_complete_case_2023 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2023, sample = "Complete cases")
+)
+
+# Calculate weighted demographic percentages
+
+demographic_comparison <- demographic_samples %>%
+  group_by(year, sample) %>%
+  summarise(
+    female_pct = weighted.mean(female, weight, na.rm = TRUE) * 100,
+    male_pct = weighted.mean(1 - female, weight, na.rm = TRUE) * 100,
+    
+    white_pct = weighted.mean(
+      as.numeric(race_group == "White"), weight, na.rm = TRUE
+    ) * 100,
+    
+    black_pct = weighted.mean(
+      as.numeric(race_group == "Black"), weight, na.rm = TRUE
+    ) * 100,
+    
+    hispanic_pct = weighted.mean(
+      as.numeric(race_group == "Hispanic"), weight, na.rm = TRUE
+    ) * 100,
+    
+    asian_pacific_pct = weighted.mean(
+      as.numeric(race_group == "Asian/Pacific Islander"),
+      weight, na.rm = TRUE
+    ) * 100,
+    
+    american_indian_pct = weighted.mean(
+      as.numeric(race_group == "American Indian/Alaska Native"),
+      weight, na.rm = TRUE
+    ) * 100,
+    
+    other_multiracial_pct = weighted.mean(
+      as.numeric(race_group == "Other/Multiracial"),
+      weight, na.rm = TRUE
+    ) * 100,
+    
+    .groups = "drop"
+  )
+
+demographic_comparison
+
+
+demographic_comparison <- demographic_comparison %>%
+  mutate(
+    race_total = white_pct + black_pct + hispanic_pct +
+      asian_pacific_pct + american_indian_pct + other_multiracial_pct
+  )
+
+demographic_comparison %>%
+  select(year, sample, race_total)
 
 ####################################################################################
 ############              PHASE 3: Descriptive Statistics     ############
@@ -1089,25 +1262,11 @@ combined_trends <- (
 combined_trends
 
 
-
-
-
 ####################################################################################
 ############              Add weights                     ############
 ####################################################################################
 # adding weights will have to be in earlier portions of the code 
 # this note is just a reminder
-
-# Standardize the weight variable name across all four years
-
-yrbs1997 <- rename(yrbs1997, weight = WEIGHT)
-
-# Check the weight variables
-
-summary(yrbs1997$weight)
-summary(yrbs2007$weight)
-summary(yrbs2017$weight)
-summary(yrbs2023$weight)
 
 ####################################################################################
 ############                   Compare our demographics with benchmarks               ############
@@ -1122,104 +1281,6 @@ summary(yrbs2023$weight)
 # to a benchmark, like the American Community Survey or the nearest census 
 # i.e., the census for 2000, 2010, 2020.
 # primiarly compare race and gender for benchmarking
-
-
-# Create a common race/ethnicity variable for 1997
-
-yrbs1997 <- mutate(
-  yrbs1997,
-  race_group = case_when(
-    Q4 == 1 ~ "White",
-    Q4 == 2 ~ "Black",
-    Q4 == 3 ~ "Hispanic",
-    Q4 == 4 ~ "Asian/Pacific Islander",
-    Q4 == 5 ~ "American Indian",
-    Q4 == 6 ~ "Other/Multiracial",
-    TRUE ~ NA_character_
-  )
-)
-
-# Create a common race/ethnicity variable for 2007
-
-yrbs2007 <- mutate(
-  yrbs2007,
-  race_group = case_when(
-    raceeth == 5 ~ "White",
-    raceeth == 3 ~ "Black",
-    raceeth %in% c(6, 7) ~ "Hispanic",
-    raceeth %in% c(2, 4) ~ "Asian/Pacific Islander",
-    raceeth == 1 ~ "American Indian",
-    raceeth == 8 ~ "Other/Multiracial",
-    TRUE ~ NA_character_
-  )
-)
-
-# Create a common race/ethnicity variable for 2017
-
-yrbs2017 <- mutate(
-  yrbs2017,
-  race_group = case_when(
-    raceeth == 5 ~ "White",
-    raceeth == 3 ~ "Black",
-    raceeth %in% c(6, 7) ~ "Hispanic",
-    raceeth %in% c(2, 4) ~ "Asian/Pacific Islander",
-    raceeth == 1 ~ "American Indian",
-    raceeth == 8 ~ "Other/Multiracial",
-    TRUE ~ NA_character_
-  )
-)
-
-
-# Create a common race/ethnicity variable for 2023
-
-yrbs2023 <- mutate(
-  yrbs2023,
-  race_group = case_when(
-    raceeth == 5 ~ "White",
-    raceeth == 3 ~ "Black",
-    raceeth %in% c(6, 7) ~ "Hispanic",
-    raceeth %in% c(2, 4) ~ "Asian/Pacific Islander",
-    raceeth == 1 ~ "American Indian",
-    raceeth == 8 ~ "Other/Multiracial",
-    TRUE ~ NA_character_
-  )
-)
-
-# Combine original samples and complete-case samples
-
-demographic_samples <- bind_rows(
-  yrbs1997 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 1997, sample = "Original"),
-  
-  yrbs_complete_case_1997 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 1997, sample = "Complete cases"),
-  
-  yrbs2007 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2007, sample = "Original"),
-  
-  yrbs_complete_case_2007 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2007, sample = "Complete cases"),
-  
-  yrbs2017 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2017, sample = "Original"),
-  
-  yrbs_complete_case_2017 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2017, sample = "Complete cases"),
-  
-  yrbs2023 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2023, sample = "Original"),
-  
-  yrbs_complete_case_2023 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2023, sample = "Complete cases")
-)
 
 ####################################################################################
 ############                   Predict missingness for sports + fighting               ############
