@@ -1009,6 +1009,7 @@ demographic_comparison <- demographic_samples %>%
 demographic_comparison
 
 
+# check that all unweighted demographic percentages sum to 100% for each year and sample
 demographic_comparison <- demographic_comparison %>%
   mutate(
     race_total = white_pct + black_pct + hispanic_pct +
@@ -1323,6 +1324,66 @@ demographic_comparison
 
 # To what extent is our sample different from the national population
 # of high school students in the U.S.?
+
+
+
+
+# Trends in deviant participation by sports involvement -------------------
+
+
+
+# Any gender differencse here? --------------------------------------------
+
+
+
+
+# Any age differences here? -----------------------------------------------
+
+
+
+# Any race differences here? ----------------------------------------------
+
+
+
+
+
+# Logistic regression models predicting pr(dev_behavior)  -----------------
+
+
+
+
+# Figure showing pr() by IVs (especially sports, controlling for demographic factors --------
+
+
+
+
+
+# measures of intensity of sport use? -------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ####################################################################################
