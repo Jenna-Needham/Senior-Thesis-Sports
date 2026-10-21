@@ -781,15 +781,13 @@ table(yrbs2023$q36, yrbs2023$nicotine_use, useNA = "ifany")
 
 ############              WEIGHTS, STRATUMS, PSUS           ############
 
-# Standardize weight, stratum, and PSU variable names
+# Standardize the weight variable name for 1997
 
 # check names of yrbs1997
 
 yrbs1997 <- rename(
   yrbs1997,
-  weight = WEIGHT,
-  stratum = STRATUM,
-  psu = PSU
+  weight = WEIGHT
 )
 
 # Check the weight, straum, and psu variables for each year
@@ -801,20 +799,6 @@ summary(yrbs2007$weight)
 summary(yrbs2017$weight)
 summary(yrbs2023$weight)
 
-# Stratum
-
-summary(yrbs1997$stratum)
-summary(yrbs2007$stratum)
-summary(yrbs2017$stratum)
-summary(yrbs2023$stratum)
-
-# PSU
-
-summary(yrbs1997$psu)
-summary(yrbs2007$psu)
-summary(yrbs2017$psu)
-summary(yrbs2023$psu)
-
 
 # Create a common race/ethnicity variable for 1997
 
@@ -825,7 +809,7 @@ yrbs1997 <- mutate(
     Q4 == 2 ~ "Black",
     Q4 == 3 ~ "Hispanic",
     Q4 == 4 ~ "Asian/Pacific Islander",
-    Q4 == 5 ~ "American Indian",
+    Q4 == 5 ~ "American Indian/Alaska Native",
     Q4 == 6 ~ "Other/Multiracial",
     TRUE ~ NA_character_
   )
@@ -887,7 +871,7 @@ yrbs2023 <- mutate(
 my_varlist <- c(
   "sports_participation", "age", "white", "black", "hispanic", "asian", 
   "american_indian", "fight", "binge_drinking", "marijuana_use", 
-  "cocaine_use", "nicotine_use", "race_group", "weight", "stratum", "psu", "female"
+  "cocaine_use", "nicotine_use", "race_group", "weight", "female"
 )
 
 
@@ -937,8 +921,6 @@ missing_07 <- 1 - (nrow(yrbs_complete_case_2007) / nrow(yrbs2007))
 missing_17 <- 1 - (nrow(yrbs_complete_case_2017) / nrow(yrbs2017))
 missing_23 <- 1 - (nrow(yrbs_complete_case_2023) / nrow(yrbs2023))
                    
-
-
 ### STEP 4: Combine all four years into one dataset
 
 my_dataset <- bind_rows(
@@ -1040,24 +1022,76 @@ demographic_comparison %>%
 ############              PHASE 3: Descriptive Statistics     ############
 ####################################################################################
 
-### TABLE 1: Descriptive statistics for 1997
+####################################################################################
+############              PHASE 3: DESCRIPTIVE STATISTICS               ############
+####################################################################################
 
-describe(yrbs_complete_case_1997)
+### TABLE 1: Weighted descriptive statistics for 1997
+
+descriptives_1997 <- yrbs_complete_case_1997 %>%
+  summarise(
+    age_mean = weighted.mean(age, weight),
+    female_pct = weighted.mean(female, weight) * 100,
+    sports_pct = weighted.mean(sports_participation, weight) * 100,
+    fight_pct = weighted.mean(fight, weight) * 100,
+    binge_drinking_pct = weighted.mean(binge_drinking, weight) * 100,
+    marijuana_use_pct = weighted.mean(marijuana_use, weight) * 100,
+    cocaine_use_pct = weighted.mean(cocaine_use, weight) * 100,
+    nicotine_use_pct = weighted.mean(nicotine_use, weight) * 100
+  )
+
+descriptives_1997
 
 
-### TABLE 2: Descriptive statistics for 2007
+### TABLE 2: Weighted descriptive statistics for 2007
 
-describe(yrbs_complete_case_2007)
+descriptives_2007 <- yrbs_complete_case_2007 %>%
+  summarise(
+    age_mean = weighted.mean(age, weight),
+    female_pct = weighted.mean(female, weight) * 100,
+    sports_pct = weighted.mean(sports_participation, weight) * 100,
+    fight_pct = weighted.mean(fight, weight) * 100,
+    binge_drinking_pct = weighted.mean(binge_drinking, weight) * 100,
+    marijuana_use_pct = weighted.mean(marijuana_use, weight) * 100,
+    cocaine_use_pct = weighted.mean(cocaine_use, weight) * 100,
+    nicotine_use_pct = weighted.mean(nicotine_use, weight) * 100
+  )
+
+descriptives_2007
 
 
-### TABLE 3: Descriptive statistics for 2017
+### TABLE 3: Weighted descriptive statistics for 2017
 
-describe(yrbs_complete_case_2017)
+descriptives_2017 <- yrbs_complete_case_2017 %>%
+  summarise(
+    age_mean = weighted.mean(age, weight),
+    female_pct = weighted.mean(female, weight) * 100,
+    sports_pct = weighted.mean(sports_participation, weight) * 100,
+    fight_pct = weighted.mean(fight, weight) * 100,
+    binge_drinking_pct = weighted.mean(binge_drinking, weight) * 100,
+    marijuana_use_pct = weighted.mean(marijuana_use, weight) * 100,
+    cocaine_use_pct = weighted.mean(cocaine_use, weight) * 100,
+    nicotine_use_pct = weighted.mean(nicotine_use, weight) * 100
+  )
+
+descriptives_2017
 
 
-### TABLE 4: Descriptive statistics for 2023
+### TABLE 4: Weighted descriptive statistics for 2023
 
-describe(yrbs_complete_case_2023)
+descriptives_2023 <- yrbs_complete_case_2023 %>%
+  summarise(
+    age_mean = weighted.mean(age, weight),
+    female_pct = weighted.mean(female, weight) * 100,
+    sports_pct = weighted.mean(sports_participation, weight) * 100,
+    fight_pct = weighted.mean(fight, weight) * 100,
+    binge_drinking_pct = weighted.mean(binge_drinking, weight) * 100,
+    marijuana_use_pct = weighted.mean(marijuana_use, weight) * 100,
+    cocaine_use_pct = weighted.mean(cocaine_use, weight) * 100,
+    nicotine_use_pct = weighted.mean(nicotine_use, weight) * 100
+  )
+
+descriptives_2023
 
 
 # figure showing important change trends
@@ -1077,10 +1111,10 @@ describe(yrbs_complete_case_2023)
 deviance_trends <- my_dataset %>%
   group_by(year) %>%
   summarise(
-    fight = mean(fight) * 100,
-    binge_drinking = mean(binge_drinking) * 100,
-    marijuana_use = mean(marijuana_use) * 100,
-    cocaine_use = mean(cocaine_use) * 100
+    fight = weighted.mean(fight, weight) * 100,
+    binge_drinking = weighted.mean(binge_drinking, weight) * 100,
+    marijuana_use = weighted.mean(marijuana_use, weight) * 100,
+    cocaine_use = weighted.mean(cocaine_use, weight) * 100
   )
 
 # STEP 2: Reshape data from wide to long format in order to create a separate line for each behavior on the same graph
@@ -1126,7 +1160,7 @@ p_deviance <- ggplot(
 sports_trends <- my_dataset %>%
   group_by(year) %>%
   summarise(
-    percent = mean(sports_participation) * 100
+    percent = weighted.mean(sports_participation, weight) * 100
   )
 
 # STEP 2: Create a line graph showing changes in sports participation across four survey years
@@ -1165,7 +1199,7 @@ p_sports <- ggplot(
 nicotine_trends <- my_dataset %>%
   group_by(year) %>%
   summarise(
-    percent = mean(nicotine_use) * 100
+    percent = weighted.mean(nicotine_use, weight) * 100
   )
 
 # STEP 2: Create a line graph showing changes in nicotine use across the four years
@@ -1203,10 +1237,15 @@ p_nicotine <- ggplot(
 
 race_trends <- my_dataset %>%
   filter(!is.na(race_group)) %>%
-  count(year, race_group) %>%
-  complete(year, race_group, fill = list(n = 0)) %>%
+  group_by(year, race_group) %>%
+  summarise(
+    weighted_n = sum(weight),
+    .groups = "drop"
+  ) %>%
   group_by(year) %>%
-  mutate(percent = n / sum(n) * 100) %>%
+  mutate(
+    percent = weighted_n / sum(weighted_n) * 100
+  ) %>%
   ungroup()
 
 # STEP 2: Check that percentages add up to 100% each year
@@ -1261,21 +1300,182 @@ combined_trends <- (
 
 combined_trends
 
-
 ####################################################################################
-############              Add weights                     ############
-####################################################################################
-# adding weights will have to be in earlier portions of the code 
-# this note is just a reminder
-
-####################################################################################
-############                   Compare our demographics with benchmarks               ############
+############         Compare our demographics with benchmarks      ############
 ####################################################################################
 
-# to what extent is our sample different from the national population of high school students in the U.S.?
-# 1) Look at weighted racial composition in the whole sample 
-# and compare to the weighted racial composition of our selected sample 
-# for example, given missingness
+# To what extent is our sample different from the national population
+# of high school students in the U.S.? 
+
+demographic_comparison
+
+####################################################################################
+############     Compare Whole Sample vs. Selected Complete-Case Sample    ############
+####################################################################################
+
+# Look at weighted racial and gender composition in the whole YRBS sample
+# and compare it to the weighted racial and gender composition
+# of our selected complete-case analytic sample 
+
+####################################################################################
+############        COMPARE OUR DEMOGRAPHICS WITH BENCHMARKS            ############
+####################################################################################
+
+# To what extent is our sample different from the national population
+# of high school students in the U.S.?
+
+
+####################################################################################
+############ 1) COMPARE WHOLE SAMPLE VS. SELECTED COMPLETE-CASE SAMPLE ############
+####################################################################################
+
+# Look at weighted racial and gender composition in the whole YRBS sample
+# and compare it to the weighted racial and gender composition
+# of our selected complete-case analytic sample.
+
+
+# STEP 1: Combine original samples and complete-case samples (only weight, female, race_group)
+
+demographic_samples <- bind_rows(
+  yrbs1997 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 1997, sample = "Original"),
+  
+  yrbs_complete_case_1997 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 1997, sample = "Complete cases"),
+  
+  yrbs2007 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2007, sample = "Original"),
+  
+  yrbs_complete_case_2007 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2007, sample = "Complete cases"),
+  
+  yrbs2017 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2017, sample = "Original"),
+  
+  yrbs_complete_case_2017 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2017, sample = "Complete cases"),
+  
+  yrbs2023 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2023, sample = "Original"),
+  
+  yrbs_complete_case_2023 %>%
+    select(weight, female, race_group) %>%
+    mutate(year = 2023, sample = "Complete cases")
+)
+
+
+# STEP 2: Calculate weighted gender and race percentages (group by year and sample type)
+# this gives us separate percentages for 1997 original, 1997 complete cases, etc.
+# weighted.mean(female, weight) gives the weighted proportion female 
+# weighted.mean(1 - female, weight) gives us the proportion male 
+
+demographic_comparison <- demographic_samples %>%
+  group_by(year, sample) %>%
+  summarise(
+    female_pct = weighted.mean(female, weight, na.rm = TRUE) * 100,
+    male_pct = weighted.mean(1 - female, weight, na.rm = TRUE) * 100,
+    
+    white_pct = weighted.mean(
+      as.numeric(race_group == "White"),
+      weight,
+      na.rm = TRUE
+    ) * 100,
+    
+    black_pct = weighted.mean(
+      as.numeric(race_group == "Black"),
+      weight,
+      na.rm = TRUE
+    ) * 100,
+    
+    hispanic_pct = weighted.mean(
+      as.numeric(race_group == "Hispanic"),
+      weight,
+      na.rm = TRUE
+    ) * 100,
+    
+    asian_pacific_pct = weighted.mean(
+      as.numeric(race_group == "Asian/Pacific Islander"),
+      weight,
+      na.rm = TRUE
+    ) * 100,
+    
+    american_indian_pct = weighted.mean(
+      as.numeric(race_group == "American Indian/Alaska Native"),
+      weight,
+      na.rm = TRUE
+    ) * 100,
+    
+    other_multiracial_pct = weighted.mean(
+      as.numeric(race_group == "Other/Multiracial"),
+      weight,
+      na.rm = TRUE
+    ) * 100,
+    
+    .groups = "drop"
+  )
+
+
+# STEP 3: View weighted demographic percentages
+
+demographic_comparison
+
+
+# STEP 4: Check that weighted race percentages add to approximately 100%
+
+demographic_comparison <- demographic_comparison %>%
+  mutate(
+    race_total =
+      white_pct +
+      black_pct +
+      hispanic_pct +
+      asian_pacific_pct +
+      american_indian_pct +
+      other_multiracial_pct
+  )
+
+demographic_comparison %>%
+  select(year, sample, race_total)
+
+
+# STEP 5: Calculate the difference between the original sample and the complete-case sample
+# we use pivot_longer() so that each demographic group has its own row
+# then we use pivot_wider() so Original and Complete cases are in separate columns
+
+sample_comparison <- demographic_comparison %>%
+  select(
+    year,
+    sample,
+    female_pct,
+    male_pct,
+    white_pct,
+    black_pct,
+    hispanic_pct,
+    asian_pacific_pct,
+    american_indian_pct,
+    other_multiracial_pct
+  ) %>%
+  pivot_longer(
+    cols = -c(year, sample),
+    names_to = "demographic_group",
+    values_to = "percent"
+  ) %>%
+  pivot_wider(
+    names_from = sample,
+    values_from = percent
+  ) %>%
+  mutate(
+    Difference = `Complete cases` - Original
+  )
+
+sample_comparison
+
 
 # 2) Compare our weighted racial composition in the whole sample and our selected subsample
 # to a benchmark, like the American Community Survey or the nearest census 
