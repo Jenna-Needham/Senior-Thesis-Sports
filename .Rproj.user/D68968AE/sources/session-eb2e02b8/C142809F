@@ -1,0 +1,26 @@
+{
+    "id": "C142809F",
+    "path": "~/GitHub/Senior-Thesis-Sports/03_merge.R",
+    "project_path": "03_merge.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1793220539402.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "90,70",
+        "scrollLine": "0"
+    },
+    "folds": "1|81|90|70|\n",
+    "lastKnownWriteTime": 1793220659,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1793220659625,
+    "read_only": false,
+    "read_only_alternatives": []
+}

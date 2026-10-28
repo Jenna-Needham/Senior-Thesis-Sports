@@ -1,0 +1,26 @@
+{
+    "id": "9A4EA3D2",
+    "path": "~/GitHub/Senior-Thesis-Sports/02_clean.R",
+    "project_path": "02_clean.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1793220535431.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "915,0",
+        "scrollLine": "0"
+    },
+    "folds": "1|72|8|0|\n9|82|203|0|\n204|72|510|0|\n511|73|571|0|\n572|77|631|0|\n632|79|685|0|\n686|84|738|0|\n739|80|834|0|\n835|43|915|0|\n",
+    "lastKnownWriteTime": 1793220634,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1793220634552,
+    "read_only": false,
+    "read_only_alternatives": []
+}
