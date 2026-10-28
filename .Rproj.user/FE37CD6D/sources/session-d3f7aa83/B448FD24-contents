@@ -108,6 +108,29 @@ table(
   useNA = "ifany"
 )
 
+## Create binary sports category 
+
+# STEP 1: Create a binary sports category variable for 1997
+
+yrbs1997 <- mutate(
+  yrbs1997,
+  sports_group = ifelse(
+    sports_participation == 1,
+    "Sport",
+    "No Sport"
+  )
+)
+
+# STEP 2: Confirm creation
+
+table(yrbs1997$sports_group, useNA = "ifany")
+
+table(
+  yrbs1997$sports_participation,
+  yrbs1997$sports_group,
+  useNA = "ifany"
+)
+
 ## 2007
 
 # STEP 1: Examine variable and coding schema 
@@ -123,6 +146,31 @@ yrbs2007 <- mutate(yrbs2007, sports_participation = ifelse(q84 == 1, 0, 1))
 table(yrbs2007$sports_participation, useNA = "ifany")
 table(yrbs2007$q84, yrbs2007$sports_participation, useNA = "ifany")
 
+
+# Create a binary sports participation category 
+
+# STEP 1: Create a binary sports category variable for 2007
+
+yrbs2007 <- mutate(
+  yrbs2007,
+  sports_group = ifelse(
+    sports_participation == 1,
+    "Sport",
+    "No Sport"
+  )
+)
+
+# STEP 2: Confirm creation
+
+table(yrbs2007$sports_group, useNA = "ifany")
+
+table(
+  yrbs2007$sports_participation,
+  yrbs2007$sports_group,
+  useNA = "ifany"
+)
+
+
 ## 2017 
 # STEP 1: Examine variable and coding schema
 
@@ -136,6 +184,29 @@ yrbs2017 <- mutate(yrbs2017, sports_participation = ifelse(q83 == 1, 0, 1))
 
 table(yrbs2017$sports_participation, useNA = "ifany")
 table(yrbs2017$q83, yrbs2017$sports_participation, useNA = "ifany")
+
+# Create a binary sports participation category 
+
+# STEP 1: Create a binary sports category variable for 2017
+
+yrbs2017 <- mutate(
+  yrbs2017,
+  sports_group = ifelse(
+    sports_participation == 1,
+    "Sport",
+    "No Sport"
+  )
+)
+
+# STEP 2: Confirm creation
+
+table(yrbs2017$sports_group, useNA = "ifany")
+
+table(
+  yrbs2017$sports_participation,
+  yrbs2017$sports_group,
+  useNA = "ifany"
+)
 
 
 ## 2023
@@ -152,6 +223,28 @@ yrbs2023 <- mutate(yrbs2023, sports_participation = ifelse(q78 == 1, 0, 1))
 table(yrbs2023$sports_participation, useNA = "ifany")
 table(yrbs2023$q78, yrbs2023$sports_participation, useNA = "ifany")
 
+# Create a binary sports participation category 
+
+# STEP 1: Create a binary sports category variable for 2023
+
+yrbs2023 <- mutate(
+  yrbs2023,
+  sports_group = ifelse(
+    sports_participation == 1,
+    "Sport",
+    "No Sport"
+  )
+)
+
+# STEP 2: Confirm creation
+
+table(yrbs2023$sports_group, useNA = "ifany")
+
+table(
+  yrbs2023$sports_participation,
+  yrbs2023$sports_group,
+  useNA = "ifany"
+)
 
 
 ############                    DEMOGRAPHIC VARIABLES                   ############
@@ -699,7 +792,12 @@ table(yrbs1997$Q28, useNA = "ifany")
 
 # STEP 2: Create binary variable for nicotine use
 
-yrbs1997 <- mutate(yrbs1997, nicotine_use = ifelse(Q28 >= 2 & Q28 <= 7, 1, 0))
+yrbs1997 <- mutate(
+  yrbs1997,
+  cig = ifelse(Q28 >= 2 & Q28 <= 7, 1, 0),
+  vaping = NA_real_,
+  nicotine_use = cig
+)
 
 # STEP 3: Confirm creation
 
@@ -715,8 +813,12 @@ table(yrbs2007$q30, useNA = "ifany")
 
 # STEP 2: Create binary variable for nicotine use
 
-yrbs2007 <- mutate(yrbs2007, nicotine_use = ifelse(q30 >= 2 & q30 <= 7, 1, 0))
-
+yrbs2007 <- mutate(
+  yrbs2007,
+  cig = ifelse(q30 >= 2 & q30 <= 7, 1, 0),
+  vaping = NA_real_,
+  nicotine_use = cig
+)
 # STEP 3: Confirm creation
 
 table(yrbs2007$nicotine_use, useNA = "ifany")
@@ -733,11 +835,15 @@ table(yrbs2017$q35, useNA = "ifany")
 # 1 = cigarette OR vaping use
 # 0 = neither cigarette nor vaping use
 
-yrbs2017 <- mutate(yrbs2017, nicotine_use = ifelse(
-  (q32 >= 2 & q32 <= 7) | (q35 >= 2 & q35 <= 7),
-  1,
-  0
-))
+yrbs2017 <- mutate(
+  yrbs2017,
+  cig = ifelse(q32 >= 2 & q32 <= 7, 1, 0),
+  vaping = ifelse(q35 >= 2 & q35 <= 7, 1, 0),
+  nicotine_use = ifelse(
+    (q32 >= 2 & q32 <= 7) | (q35 >= 2 & q35 <= 7),
+    1, 0
+  )
+)
 
 # STEP 3: Confirm creation
 
@@ -756,11 +862,15 @@ table(yrbs2023$q36, useNA = "ifany")
 # 1 = cigarette OR vaping use
 # 0 = neither cigarette nor vaping use
 
-yrbs2023 <- mutate(yrbs2023, nicotine_use = ifelse(
-  (q33 >= 2 & q33 <= 7) | (q36 >= 2 & q36 <= 7),
-  1,
-  0
-))
+yrbs2023 <- mutate(
+  yrbs2023,
+  cig = ifelse(q33 >= 2 & q33 <= 7, 1, 0),
+  vaping = ifelse(q36 >= 2 & q36 <= 7, 1, 0),
+  nicotine_use = ifelse(
+    (q33 >= 2 & q33 <= 7) | (q36 >= 2 & q36 <= 7),
+    1, 0
+  )
+)
 
 # STEP 3: Confirm creation
 
@@ -779,7 +889,7 @@ yrbs1997 <- rename(
   weight = WEIGHT
 )
 
-# Check the weight, straum, and psu variables for each year
+# Check the weight variables for each year
 
 # Weight
 
@@ -859,7 +969,7 @@ yrbs2023 <- mutate(
 my_varlist <- c(
   "sports_participation", "age", "white", "black", "hispanic", "asian", 
   "american_indian", "fight", "binge_drinking", "marijuana_use", 
-  "cocaine_use", "nicotine_use", "race_group", "weight", "female"
+  "cocaine_use", "cig", "vaping", "race_group", "weight", "female", "sports_group", "nicotine_use"
 )
 
 
@@ -876,40 +986,21 @@ my_varlist_2007_2017_2023 <- c(
 )
 
 
-### STEP 2: Create a new dataset for each year
-### with only your variables and complete cases
+### STEP 2: Create a dataset for each year
 
-yrbs_complete_case_1997 <- yrbs1997 %>% 
-  select(all_of(c(my_varlist, my_varlist_1997))) %>% 
-  filter(complete.cases(.))
+yrbs_data_1997 <- yrbs1997 %>%
+  select(all_of(c(my_varlist, my_varlist_1997)))
 
+yrbs_data_2007 <- yrbs2007 %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023)))
 
-yrbs_complete_case_2007 <- yrbs2007 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>% 
-  filter(complete.cases(.))
+yrbs_data_2017 <- yrbs2017 %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023)))
 
-yrbs_complete_case_2017 <- yrbs2017 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>%
-  filter(complete.cases(.))
+yrbs_data_2023 <- yrbs2023 %>%
+  select(all_of(c(my_varlist, my_varlist_2007_2017_2023)))
 
-yrbs_complete_case_2023 <- yrbs2023 %>% 
-  select(all_of(c(my_varlist, my_varlist_2007_2017_2023))) %>%
-  filter(complete.cases(.))
-
-## STEP 3: Check the number of complete cases
-
-nrow(yrbs_complete_case_1997) 
-nrow(yrbs_complete_case_2007) 
-nrow(yrbs_complete_case_2017) 
-nrow(yrbs_complete_case_2023)
-
-# proportion missing for each year
-missing_97 <- 1 - (nrow(yrbs_complete_case_1997) / nrow(yrbs1997))
-missing_07 <- 1 - (nrow(yrbs_complete_case_2007) / nrow(yrbs2007))
-missing_17 <- 1 - (nrow(yrbs_complete_case_2017) / nrow(yrbs2017))
-missing_23 <- 1 - (nrow(yrbs_complete_case_2023) / nrow(yrbs2023))
-                   
-### STEP 4: Combine all four years into one dataset
+### STEP 3: Combine all four years into one dataset
 
 my_dataset <- bind_rows(
   yrbs_complete_case_1997 %>% mutate(year = 1997),
@@ -918,95 +1009,48 @@ my_dataset <- bind_rows(
   yrbs_complete_case_2023 %>% mutate(year = 2023)
 )
 
+# Check that all four years are present
+table(my_dataset$year)
 
+## STEP 3: Create separate complete-case datasets for the
+## common variables used in the main regression analyses.
+## These do NOT require vaping, since vaping is unavailable in 1997/2007.
 
-# Combine original samples and complete-case samples (weighted values)
-
-demographic_samples <- bind_rows(
-  yrbs1997 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 1997, sample = "Original"),
-  
-  yrbs_complete_case_1997 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 1997, sample = "Complete cases"),
-  
-  yrbs2007 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2007, sample = "Original"),
-  
-  yrbs_complete_case_2007 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2007, sample = "Complete cases"),
-  
-  yrbs2017 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2017, sample = "Original"),
-  
-  yrbs_complete_case_2017 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2017, sample = "Complete cases"),
-  
-  yrbs2023 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2023, sample = "Original"),
-  
-  yrbs_complete_case_2023 %>%
-    select(weight, female, race_group) %>%
-    mutate(year = 2023, sample = "Complete cases")
+complete_case_vars <- c(
+  "sports_participation", "age", "female", "race_group", "fight",
+  "binge_drinking", "marijuana_use", "cocaine_use", "weight"
 )
 
-# Calculate weighted demographic percentages
+yrbs_complete_case_1997 <- yrbs_data_1997 %>%
+  filter(complete.cases(select(., all_of(complete_case_vars))))
 
-demographic_comparison <- demographic_samples %>%
-  group_by(year, sample) %>%
-  summarise(
-    female_pct = weighted.mean(female, weight, na.rm = TRUE) * 100,
-    male_pct = weighted.mean(1 - female, weight, na.rm = TRUE) * 100,
-    
-    white_pct = weighted.mean(
-      as.numeric(race_group == "White"), weight, na.rm = TRUE
-    ) * 100,
-    
-    black_pct = weighted.mean(
-      as.numeric(race_group == "Black"), weight, na.rm = TRUE
-    ) * 100,
-    
-    hispanic_pct = weighted.mean(
-      as.numeric(race_group == "Hispanic"), weight, na.rm = TRUE
-    ) * 100,
-    
-    asian_pacific_pct = weighted.mean(
-      as.numeric(race_group == "Asian/Pacific Islander"),
-      weight, na.rm = TRUE
-    ) * 100,
-    
-    american_indian_pct = weighted.mean(
-      as.numeric(race_group == "American Indian/Alaska Native"),
-      weight, na.rm = TRUE
-    ) * 100,
-    
-    other_multiracial_pct = weighted.mean(
-      as.numeric(race_group == "Other/Multiracial"),
-      weight, na.rm = TRUE
-    ) * 100,
-    
-    .groups = "drop"
-  )
+yrbs_complete_case_2007 <- yrbs_data_2007 %>%
+  filter(complete.cases(select(., all_of(complete_case_vars))))
 
-demographic_comparison
+yrbs_complete_case_2017 <- yrbs_data_2017 %>%
+  filter(complete.cases(select(., all_of(complete_case_vars))))
 
+yrbs_complete_case_2023 <- yrbs_data_2023 %>%
+  filter(complete.cases(select(., all_of(complete_case_vars))))
 
-# check that all unweighted demographic percentages sum to 100% for each year and sample
-demographic_comparison <- demographic_comparison %>%
-  mutate(
-    race_total = white_pct + black_pct + hispanic_pct +
-      asian_pacific_pct + american_indian_pct + other_multiracial_pct
-  )
+## Check sample sizes
 
-demographic_comparison %>%
-  select(year, sample, race_total)
+nrow(yrbs_data_1997)
+nrow(yrbs_data_2007)
+nrow(yrbs_data_2017)
+nrow(yrbs_data_2023)
 
+nrow(yrbs_complete_case_1997)
+nrow(yrbs_complete_case_2007)
+nrow(yrbs_complete_case_2017)
+nrow(yrbs_complete_case_2023)
+
+## Proportion excluded from the selected complete-case sample
+
+missing_97 <- 1 - nrow(yrbs_complete_case_1997) / nrow(yrbs_data_1997)
+missing_07 <- 1 - nrow(yrbs_complete_case_2007) / nrow(yrbs_data_2007)
+missing_17 <- 1 - nrow(yrbs_complete_case_2017) / nrow(yrbs_data_2017)
+missing_23 <- 1 - nrow(yrbs_complete_case_2023) / nrow(yrbs_data_2023)
 
 
 ############              PHASE 3: DESCRIPTIVE STATISTICS               ############
@@ -1079,142 +1123,155 @@ descriptives_2023 <- yrbs_complete_case_2023 %>%
 
 descriptives_2023
 
-
-# figure showing important change trends
-
-
-# set hypotheses; determine appropriate test; and bring model picture 
-# DO CODE LAST! 
-
 ############              PHASE 4: FIGURES AND TRENDS                  ############
 
+# Error bars are approximate 95% confidence intervals
+# The effective sample size accounts for unequal weights, but these intervals
+# do not account for the full YRBS complex survey design (e.g., clustering, stratification). Therefore, these intervals are likely too narrow.
 
-## Deviant Behaviors
+## Deviant behaviors: reshape the four binary outcomes into one column
 
-# STEP 1: Calculate the percentage of respondents reporting each deviant behavior (fight/binge_drinking/marijuana_use/cocaine_use) each year
+deviance_data <- my_dataset %>%
+  select(year, sports_group, weight, fight, binge_drinking, marijuana_use, cocaine_use) %>%
+  pivot_longer(
+    cols = c(fight, binge_drinking, marijuana_use, cocaine_use),
+    names_to = "behavior",
+    values_to = "response"
+  ) %>%
+  filter(!is.na(response), !is.na(weight), weight > 0)
 
-deviance_trends <- my_dataset %>%
-  group_by(year) %>%
+## Overall deviance trend with confidence intervals
+
+deviance_trends <- deviance_data %>%
+  group_by(year, behavior) %>%
   summarise(
-    fight = weighted.mean(fight, weight) * 100,
-    binge_drinking = weighted.mean(binge_drinking, weight) * 100,
-    marijuana_use = weighted.mean(marijuana_use, weight) * 100,
-    cocaine_use = weighted.mean(cocaine_use, weight) * 100
+    percent = weighted.mean(response, weight, na.rm = TRUE) * 100,
+    n_eff = sum(weight)^2 / sum(weight^2),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
+    lower = pmax(0, percent - 1.96 * se * 100),
+    upper = pmin(100, percent + 1.96 * se * 100)
   )
 
-# STEP 2: Reshape data from wide to long format in order to create a separate line for each behavior on the same graph
-
-deviance_trends <- pivot_longer(
-  deviance_trends,
-  cols = c(fight, binge_drinking, marijuana_use, cocaine_use),
-  names_to = "behavior",
-  values_to = "percent"
-)
-
-# STEP 3: Create a line graph showing trends for all four deviant behaviors
+# Create graph using the confidence intervals 
 
 p_deviance <- ggplot(
   deviance_trends,
-  aes(
-    x = year,
-    y = percent,
-    color = behavior,
-    group = behavior
-  )
+  aes(x = year, y = percent, color = behavior, group = behavior)
 ) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 1) +
   labs(
     title = "Deviant Behaviors",
     x = "Year",
     y = "Percent Reporting Behavior",
     color = "Behavior"
   ) +
-  scale_x_continuous(
-    breaks = c(1997, 2007, 2017, 2023)
-  ) +
-  scale_color_brewer(
-    palette = "Dark2"
-  ) +
+  scale_x_continuous(breaks = c(1997, 2007, 2017, 2023)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
+  scale_color_brewer(palette = "Dark2") +
   theme_minimal()
 
-## Sports
+# Print graph
 
-# STEP 1: Calculate the percentage of respondents participating in sports in each year
+p_deviance
 
-sports_trends <- my_dataset %>%
+## Sports participation: percent in Sport and No Sport groups
+
+sports_year_n <- my_dataset %>%
+  filter(!is.na(sports_group), !is.na(weight), weight > 0) %>%
   group_by(year) %>%
   summarise(
-    percent = weighted.mean(sports_participation, weight) * 100
+    n_eff = sum(weight)^2 / sum(weight^2),
+    .groups = "drop"
   )
 
-# STEP 2: Create a line graph showing changes in sports participation across four survey years
+sports_trends <- my_dataset %>%
+  filter(!is.na(sports_group), !is.na(weight), weight > 0) %>%
+  group_by(year, sports_group) %>%
+  summarise(
+    weighted_n = sum(weight),
+    .groups = "drop"
+  ) %>%
+  group_by(year) %>%
+  mutate(percent = weighted_n / sum(weighted_n) * 100) %>%
+  ungroup() %>%
+  left_join(sports_year_n, by = "year") %>%
+  mutate(
+    se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
+    lower = pmax(0, percent - 1.96 * se * 100),
+    upper = pmin(100, percent + 1.96 * se * 100)
+  )
 
 p_sports <- ggplot(
   sports_trends,
-  aes(
-    x = year,
-    y = percent
-  )
+  aes(x = year, y = percent, color = sports_group, group = sports_group)
 ) +
-  geom_line(
-    linewidth = 1,
-    color = "steelblue"
-  ) +
-  geom_point(
-    size = 2,
-    color = "steelblue"
-  ) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 1) +
   labs(
     title = "Sports Participation",
     x = "Year",
-    y = "Percent Participating in Sports"
+    y = "Percent of Students",
+    color = "Sports Participation"
   ) +
-  scale_x_continuous(
-    breaks = c(1997, 2007, 2017, 2023)
-  ) +
+  scale_x_continuous(breaks = c(1997, 2007, 2017, 2023)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
   theme_minimal()
 
+p_sports
 
+# Nicotine: average/combined nicotine, cigarettes, and vaping
+# Note: In 1997 and 2007, nicotine_use represents cigarettes only.
+# In 2017 and 2023, nicotine_use represents cigarettes OR vaping.
 
-## Nicotine
+nicotine_data <- my_dataset %>%
+  select(year, sports_group, weight, nicotine_use, cig, vaping) %>%
+  rename(avg_nic = nicotine_use) %>%
+  pivot_longer(
+    cols = c(avg_nic, cig, vaping),
+    names_to = "nicotine_type",
+    values_to = "response"
+  ) %>%
+  filter(!is.na(response), !is.na(weight), weight > 0)
 
-# STEP 1: Calculate the percentage of respondents reporting nicotine use in each year
-
-nicotine_trends <- my_dataset %>%
-  group_by(year) %>%
+nicotine_trends <- nicotine_data %>%
+  group_by(year, nicotine_type) %>%
   summarise(
-    percent = weighted.mean(nicotine_use, weight) * 100
+    percent = weighted.mean(response, weight, na.rm = TRUE) * 100,
+    n_eff = sum(weight)^2 / sum(weight^2),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
+    lower = pmax(0, percent - 1.96 * se * 100),
+    upper = pmin(100, percent + 1.96 * se * 100)
   )
-
-# STEP 2: Create a line graph showing changes in nicotine use across the four years
 
 p_nicotine <- ggplot(
   nicotine_trends,
-  aes(
-    x = year,
-    y = percent
-  )
+  aes(x = year, y = percent, color = nicotine_type, group = nicotine_type)
 ) +
-  geom_line(
-    linewidth = 1,
-    color = "firebrick"
-  ) +
-  geom_point(
-    size = 2,
-    color = "firebrick"
-  ) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 1) +
   labs(
     title = "Nicotine Use",
     x = "Year",
-    y = "Percent Reporting Nicotine Use"
+    y = "Percent Reporting Use",
+    color = "Nicotine Type"
   ) +
-  scale_x_continuous(
-    breaks = c(1997, 2007, 2017, 2023)
-  ) +
-  ylim(0, 100) +
+  scale_x_continuous(breaks = c(1997, 2007, 2017, 2023)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
+  scale_color_brewer(palette = "Dark2") +
   theme_minimal()
 
+
+p_nicotine
 
 ## Race
 
@@ -1270,6 +1327,155 @@ p_race <- ggplot(
   ) +
   theme_minimal()
 
+p_race
+
+## Deviant Behaviors
+
+# STEP 1: Calculate the percentage of respondents reporting each deviant behavior (fight/binge_drinking/marijuana_use/cocaine_use) each year
+
+deviance_trends <- my_dataset %>%
+  group_by(year) %>%
+  summarise(
+    fight = weighted.mean(fight, weight, na.rm = TRUE) * 100,
+    binge_drinking = weighted.mean(binge_drinking, weight, na.rm = TRUE) * 100,
+    marijuana_use = weighted.mean(marijuana_use, weight, na.rm = TRUE) * 100,
+    cocaine_use = weighted.mean(cocaine_use, weight, na.rm = TRUE) * 100
+  )
+
+# STEP 2: Reshape data from wide to long format in order to create a separate line for each behavior on the same graph
+
+deviance_trends <- pivot_longer(
+  deviance_trends,
+  cols = c(fight, binge_drinking, marijuana_use, cocaine_use),
+  names_to = "behavior",
+  values_to = "percent"
+)
+
+# STEP 3: Create a line graph showing trends for all four deviant behaviors
+
+p_deviance <- ggplot(
+  deviance_trends,
+  aes(
+    x = year,
+    y = percent,
+    color = behavior,
+    group = behavior
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Deviant Behaviors",
+    x = "Year",
+    y = "Percent Reporting Behavior",
+    color = "Behavior"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  scale_color_brewer(
+    palette = "Dark2"
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100)
+  ) +
+  theme_minimal()
+
+## Sports
+
+# STEP 1: Calculate the percentage of respondents participating in sports in each year
+
+sports_trends <- my_dataset %>%
+  filter(!is.na(sports_group)) %>%
+  group_by(year, sports_group) %>%
+  summarise(
+    weighted_n = sum(weight, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  group_by(year) %>%
+  mutate(
+    percent = weighted_n / sum(weighted_n) * 100
+  ) %>%
+  ungroup()
+
+# STEP 2: Create a line graph showing changes in sports participation across four survey years
+
+p_sports <- ggplot(
+  sports_trends,
+  aes(
+    x = year,
+    y = percent,
+    color = sports_group,
+    group = sports_group
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Sports Participation",
+    x = "Year",
+    y = "Percent",
+    color = "Sports Participation"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20)
+  ) +
+  theme_minimal()
+
+
+
+## Nicotine
+
+# STEP 1: Calculate the percentage of respondents reporting nicotine use in each year
+
+nicotine_trends <- my_dataset %>%
+  group_by(year) %>%
+  summarise(
+    avg_nic = weighted.mean(nicotine_use, weight, na.rm = TRUE) * 100,
+    cig = weighted.mean(cig, weight, na.rm = TRUE) * 100,
+    vaping = weighted.mean(vaping, weight, na.rm = TRUE) * 100
+  )
+
+nicotine_trends <- pivot_longer(
+  nicotine_trends,
+  cols = c(avg_nic, cig, vaping),
+  names_to = "nicotine_type",
+  values_to = "percent"
+)
+
+# STEP 2: Create a line graph showing changes in nicotine use across the four years
+
+p_nicotine <- ggplot(
+  nicotine_trends,
+  aes(
+    x = year,
+    y = percent,
+    color = nicotine_type,
+    group = nicotine_type
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Nicotine Use",
+    x = "Year",
+    y = "Percent Reporting Nicotine Use",
+    color = "Nicotine Type"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20)
+  ) +
+  theme_minimal()
+
+
 
 ############                   COMBINE ALL FOUR GRAPHS               ############
 
@@ -1281,6 +1487,7 @@ combined_trends <- (
 ) / (
   p_nicotine | p_race
 )
+
 
 # Display the combined figure
 
@@ -1522,3 +1729,66 @@ sample_comparison
 
 # Is the data missing completely at random (MCAR), missing at random (MAR), or missing not at random (MNAR)?
 
+
+
+fight_trends <- my_dataset %>%
+  filter(!is.na(sports_group)) %>%
+  group_by(year, sports_group) %>%
+  summarise(
+    percent = weighted.mean(fight, weight, na.rm = TRUE) * 100,
+    n = sum(!is.na(fight)),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    proportion = percent / 100,
+    se = sqrt(proportion * (1 - proportion) / n),
+    lower = (proportion - 1.96 * se) * 100,
+    upper = (proportion + 1.96 * se) * 100
+  )
+
+fight_trends
+
+p_fight_sport <- ggplot(
+  fight_trends %>% filter(sports_group == "Sport"),
+  aes(
+    x = year,
+    y = percent
+  )
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_errorbar(
+    aes(
+      ymin = lower,
+      ymax = upper
+    ),
+    width = 1
+  ) +
+  labs(
+    title = "Fighting Among Students Participating in Sports",
+    x = "Year",
+    y = "Percent Reporting Fighting"
+  ) +
+  scale_x_continuous(
+    breaks = c(1997, 2007, 2017, 2023)
+  ) +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 20)
+  ) +
+  theme_minimal()
+
+
+deviance_trends %>%
+  filter(is.na(percent) | !is.finite(percent))
+
+deviance_trends <- my_dataset %>%
+  filter(!is.na(weight)) %>%
+  group_by(year) %>%
+  summarise(
+    fight = weighted.mean(fight, weight, na.rm = TRUE) * 100,
+    binge_drinking = weighted.mean(binge_drinking, weight, na.rm = TRUE) * 100,
+    marijuana_use = weighted.mean(marijuana_use, weight, na.rm = TRUE) * 100,
+    cocaine_use = weighted.mean(cocaine_use, weight, na.rm = TRUE) * 100
+  )
+deviance_trends
