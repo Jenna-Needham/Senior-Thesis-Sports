@@ -5,9 +5,8 @@
 # Who:       Jenna Needham supervised by Zachary Kline
 
 
-####################################################################################
+
 ############              Pre-Analysis: settings, packages, and data    ############
-####################################################################################
 
 ### Settings and Packages
 # set WD for Needham
@@ -45,9 +44,7 @@ yrbs2017 <- read.csv("yrbs2017.csv")
 yrbs2023 <- read.csv("yrbs2023.csv")
 
 
-####################################################################################
 ############              PHASE 1: CLEAN DATA FOR ANALYSIS              ############
-####################################################################################
 
 # follow three steps of cleaning data for each variable for each year
 # step 1: examine the variable
@@ -55,9 +52,7 @@ yrbs2023 <- read.csv("yrbs2023.csv")
 # Step 3: Confirm cleaning was correct
 
 
-############                     INDEPENDENT VARIABLE                     ############
-############                       Sports Participation                   ############
-
+############       INDEPENDENT VARIABLE: Sports Participation                     ############
 ## 1997
 
 ## AMOUNT OF TEAMS PLAYED FOR RUN BY SCHOOL
@@ -466,8 +461,7 @@ table(yrbs2023$raceeth, yrbs2023$hispanic, useNA = "ifany")
 table(yrbs2023$raceeth, yrbs2023$multiple_hispanic, useNA = "ifany")
 table(yrbs2023$raceeth, yrbs2023$multiple_nonhispanic, useNA = "ifany")
 
-############                    DEPENDENT VARIABLES                   ############
-############                        FIGHTING                          ############
+############              DEPENDENT VARIABLE: Fighting                   ############
 
 ## 1997
 
@@ -528,9 +522,7 @@ yrbs2023 <- mutate(yrbs2023, fight = ifelse(q16 >= 2 & q16 <= 8, 1, 0))
 
 table(yrbs2023$q16, yrbs2023$fight, useNA = "ifany")
 
-############                    DEPENDENT VARIABLE                    ############
-############                        ALCOHOL USE                       ############
-
+############              DEPENDENT VARIABLE: Alcohol Use                    ############
 ## 1997
 
 # STEP 1: Examine variable and coding schema
@@ -590,8 +582,7 @@ yrbs2023 <- mutate(yrbs2023, binge_drinking = ifelse(q43 >= 2 & q43 <= 7, 1, 0))
 
 table(yrbs2023$q43, yrbs2023$binge_drinking, useNA = "ifany")
 
-############                    DEPENDENT VARIABLE                    ############
-############                      MARIJUANA USE                       ############
+############              DEPENDENT VARIABLE: Marijuana Use                    ############
 
 ## 1997
 
@@ -645,8 +636,7 @@ table(yrbs2023$marijuana_use, useNA = "ifany")
 table(yrbs2023$q48, yrbs2023$marijuana_use, useNA = "ifany")
 
 
-############              DEPENDENT VARIABLE                      ############
-############              LIFETIME COCAINE USE                     ############
+############          DEPENDENT VARIABLE: Lifetime Cocaine Use                      ############
 
 ## 1997
 
@@ -699,8 +689,7 @@ yrbs2023 <- mutate(yrbs2023, cocaine_use = ifelse(q50 >= 2 & q50 <= 6, 1, 0))
 table(yrbs2023$cocaine_use, useNA = "ifany")
 table(yrbs2023$q50, yrbs2023$cocaine_use, useNA = "ifany")
 
-############              DEPENDENT VARIABLE                      ############
-############                NICOTINE USE                         ############
+############              DEPENDENT VARIABLE: Nicotine Use                      ############
 
 ## 1997
 
@@ -779,7 +768,7 @@ table(yrbs2023$nicotine_use)
 table(yrbs2023$q33, yrbs2023$nicotine_use, useNA = "ifany")
 table(yrbs2023$q36, yrbs2023$nicotine_use, useNA = "ifany")
 
-############              WEIGHTS, STRATUMS, PSUS           ############
+############              WEIGHTS          ############
 
 # Standardize the weight variable name for 1997
 
@@ -862,9 +851,8 @@ yrbs2023 <- mutate(
 
 
 
-####################################################################################
 ############              PHASE 2: CREATE MY DATASET                    ############
-####################################################################################
+
 
 ## STEP 1: Create a list of variables to keep across all four years
 
@@ -1019,13 +1007,10 @@ demographic_comparison <- demographic_comparison %>%
 demographic_comparison %>%
   select(year, sample, race_total)
 
-####################################################################################
-############              PHASE 3: Descriptive Statistics     ############
-####################################################################################
 
-####################################################################################
+
 ############              PHASE 3: DESCRIPTIVE STATISTICS               ############
-####################################################################################
+
 
 ### TABLE 1: Weighted descriptive statistics for 1997
 
@@ -1101,9 +1086,8 @@ descriptives_2023
 # set hypotheses; determine appropriate test; and bring model picture 
 # DO CODE LAST! 
 
-####################################################################################
-############              PHASE 4: Figures and Trends                  ############
-####################################################################################
+############              PHASE 4: FIGURES AND TRENDS                  ############
+
 
 ## Deviant Behaviors
 
@@ -1287,9 +1271,8 @@ p_race <- ggplot(
   theme_minimal()
 
 
-####################################################################################
 ############                   COMBINE ALL FOUR GRAPHS               ############
-####################################################################################
+
 
 # Use patchwork to arrange the four graphs into one 2 x 2 figure
 
@@ -1320,9 +1303,9 @@ demographic_comparison
 # and compare it to the weighted racial and gender composition
 # of our selected complete-case analytic sample 
 
-####################################################################################
+
 ############        COMPARE OUR DEMOGRAPHICS WITH BENCHMARKS            ############
-####################################################################################
+
 
 # To what extent is our sample different from the national population
 # of high school students in the U.S.?
@@ -1361,23 +1344,6 @@ demographic_comparison
 
 
 # measures of intensity of sport use? -------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1435,7 +1401,7 @@ demographic_samples <- bind_rows(
 
 
 
- # STEP 2: Calculate weighted gender and race percentages (group by year and sample type)
+         # STEP 2: Calculate weighted gender and race percentages (group by year and sample type)
 # this gives us separate percentages for 1997 original, 1997 complete cases, etc.
 # weighted.mean(female, weight) gives the weighted proportion female 
 # weighted.mean(1 - female, weight) gives us the proportion male 
