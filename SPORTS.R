@@ -1173,6 +1173,9 @@ deviance_trends <- deviance_data %>%
     upper = pmin(100, percent + moe)
   )
 
+# This seems to inflate power because we've multiplied n x 4 for year and then by 4 again for each group
+# double check errors; perhaps use lm predictions
+
 # Step 3: Draw the weighted percentages and their error bars.
 
 p_deviance <- ggplot(
