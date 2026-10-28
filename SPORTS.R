@@ -1276,8 +1276,10 @@ p_race <- ggplot(
     breaks = c(1997, 2007, 2017, 2023)
   ) +
   scale_y_continuous(
-    limits = c(0, 100),
     breaks = seq(0, 100, 20)
+  ) +
+  coord_cartesian(
+    ylim = c(0, 100)
   ) +
   scale_fill_brewer(
     palette = "Set2"
@@ -1432,7 +1434,8 @@ demographic_samples <- bind_rows(
 )
 
 
-# STEP 2: Calculate weighted gender and race percentages (group by year and sample type)
+
+ # STEP 2: Calculate weighted gender and race percentages (group by year and sample type)
 # this gives us separate percentages for 1997 original, 1997 complete cases, etc.
 # weighted.mean(female, weight) gives the weighted proportion female 
 # weighted.mean(1 - female, weight) gives us the proportion male 
