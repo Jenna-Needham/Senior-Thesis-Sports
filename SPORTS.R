@@ -1003,10 +1003,10 @@ yrbs_data_2023 <- yrbs2023 %>%
 ### STEP 3: Combine all four years into one dataset
 
 my_dataset <- bind_rows(
-  yrbs_complete_case_1997 %>% mutate(year = 1997),
-  yrbs_complete_case_2007 %>% mutate(year = 2007),
-  yrbs_complete_case_2017 %>% mutate(year = 2017),
-  yrbs_complete_case_2023 %>% mutate(year = 2023)
+  yrbs_data_1997 %>% mutate(year = 1997),
+  yrbs_data_2007 %>% mutate(year = 2007),
+  yrbs_data_2017 %>% mutate(year = 2017),
+  yrbs_data_2023 %>% mutate(year = 2023)
 )
 
 # Check that all four years are present
@@ -1125,14 +1125,27 @@ descriptives_2023
 
 ############              PHASE 4: FIGURES AND TRENDS                  ############
 
-# Error bars are approximate 95% confidence intervals
-# The effective sample size accounts for unequal weights, but these intervals
-# do not account for the full YRBS complex survey design (e.g., clustering, stratification). Therefore, these intervals are likely too narrow.
 
-## Deviant behaviors: reshape the four binary outcomes into one column
+# The percentages below use the YRBS weight variable
+# The margins of error below are approximate 95% confidence intervals. The sample size
+# does not fully account for the YRBS's complex survey design (e.g., clustering, stratification). Therefore, these intervals are likely too narrow.
+#
+# percent = weighted percentage for a group/year
+# n_eff   = approximate effective sample size after accounting for unequal weights
+# moe     = margin of error in percentage points
+# lower   = percent minus margin of error (not below 0%)
+# upper   = percent plus margin of error (not above 100%)
+# geom_errorbar() draws the vertical line from lower to upper around each point.
+
+######################### GRAPH 1: DEVIANT BEHAVIORS ###########################
+
+# Step 1: Put the four deviant-behavior variables into one column.
+# This makes it possible to draw four lines on the same graph.
+# Each variable is coded 0 = no and 1 = yes.
 
 deviance_data <- my_dataset %>%
-  select(year, sports_group, weight, fight, binge_drinking, marijuana_use, cocaine_use) %>%
+  select(year, sports_group, weight, fight, binge_drinking,
+         marijuana_use, cocaine_use) %>%
   pivot_longer(
     cols = c(fight, binge_drinking, marijuana_use, cocaine_use),
     names_to = "behavior",
@@ -1140,22 +1153,27 @@ deviance_data <- my_dataset %>%
   ) %>%
   filter(!is.na(response), !is.na(weight), weight > 0)
 
-## Overall deviance trend with confidence intervals
+# Step 2: Calculate the weighted percentage for each behavior in each year.
+# The effective sample size is calculated using the weights for the valid
+# responses to that behavior and year.
 
 deviance_trends <- deviance_data %>%
   group_by(year, behavior) %>%
   summarise(
-    percent = weighted.mean(response, weight, na.rm = TRUE) * 100,
+    percent = weighted.mean(response, weight) * 100,
     n_eff = sum(weight)^2 / sum(weight^2),
     .groups = "drop"
   ) %>%
   mutate(
+    # Approximate standard error, converted to percentage points
     se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
-    lower = pmax(0, percent - 1.96 * se * 100),
-    upper = pmin(100, percent + 1.96 * se * 100)
+    # 1.96 is used for an approximate 95% margin of error
+    moe = 1.96 * se * 100,
+    lower = pmax(0, percent - moe),
+    upper = pmin(100, percent + moe)
   )
 
-# Create graph using the confidence intervals 
+# Step 3: Draw the weighted percentages and their error bars.
 
 p_deviance <- ggplot(
   deviance_trends,
@@ -1175,22 +1193,29 @@ p_deviance <- ggplot(
   scale_color_brewer(palette = "Dark2") +
   theme_minimal()
 
-# Print graph
-
+# View the first graph
 p_deviance
 
-## Sports participation: percent in Sport and No Sport groups
+###################### GRAPH 2: SPORT VS. NO SPORT ############################
 
-sports_year_n <- my_dataset %>%
-  filter(!is.na(sports_group), !is.na(weight), weight > 0) %>%
+# Step 1: Keep only respondents with a known sports group and valid weight.
+# First, calculate the effective sample size for each year.
+
+sports_valid <- my_dataset %>%
+  filter(!is.na(sports_group), !is.na(weight), weight > 0)
+
+sports_year_n <- sports_valid %>%
   group_by(year) %>%
   summarise(
     n_eff = sum(weight)^2 / sum(weight^2),
     .groups = "drop"
   )
 
-sports_trends <- my_dataset %>%
-  filter(!is.na(sports_group), !is.na(weight), weight > 0) %>%
+# Step 2: Add the weights within Sport and No Sport.
+# The percent for each category is its share of the total weighted count
+# for that year. Because there are two categories, they should add to 100%.
+
+sports_trends <- sports_valid %>%
   group_by(year, sports_group) %>%
   summarise(
     weighted_n = sum(weight),
@@ -1202,9 +1227,12 @@ sports_trends <- my_dataset %>%
   left_join(sports_year_n, by = "year") %>%
   mutate(
     se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
-    lower = pmax(0, percent - 1.96 * se * 100),
-    upper = pmin(100, percent + 1.96 * se * 100)
+    moe = 1.96 * se * 100,
+    lower = pmax(0, percent - moe),
+    upper = pmin(100, percent + moe)
   )
+
+# Step 3: Plot the weighted percentages for Sport and No Sport.
 
 p_sports <- ggplot(
   sports_trends,
@@ -1223,14 +1251,21 @@ p_sports <- ggplot(
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
   theme_minimal()
 
+# View the second graph
 p_sports
 
-# Nicotine: average/combined nicotine, cigarettes, and vaping
-# Note: In 1997 and 2007, nicotine_use represents cigarettes only.
-# In 2017 and 2023, nicotine_use represents cigarettes OR vaping.
+######################## GRAPH 3: NICOTINE USE ################################
+
+# Note about measurement:
+# In 1997 and 2007, nicotine_use represents cigarette use only.
+# In 2017 and 2023, nicotine_use represents cigarette OR vaping use.
+# Therefore, avg_nic is not measured exactly the same way in every year.
+# Vaping is NA in 1997 and 2007 because it was not measured in those datasets.
+
+# Step 1: Put the three nicotine measures into one column to create three lines.
 
 nicotine_data <- my_dataset %>%
-  select(year, sports_group, weight, nicotine_use, cig, vaping) %>%
+  select(year, weight, nicotine_use, cig, vaping) %>%
   rename(avg_nic = nicotine_use) %>%
   pivot_longer(
     cols = c(avg_nic, cig, vaping),
@@ -1239,18 +1274,24 @@ nicotine_data <- my_dataset %>%
   ) %>%
   filter(!is.na(response), !is.na(weight), weight > 0)
 
+# Step 2: Calculate weighted percentages and approximate margins of error.
+# Missing vaping values in 1997 and 2007 are excluded, not counted as 0%.
+
 nicotine_trends <- nicotine_data %>%
   group_by(year, nicotine_type) %>%
   summarise(
-    percent = weighted.mean(response, weight, na.rm = TRUE) * 100,
+    percent = weighted.mean(response, weight) * 100,
     n_eff = sum(weight)^2 / sum(weight^2),
     .groups = "drop"
   ) %>%
   mutate(
     se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
-    lower = pmax(0, percent - 1.96 * se * 100),
-    upper = pmin(100, percent + 1.96 * se * 100)
+    moe = 1.96 * se * 100,
+    lower = pmax(0, percent - moe),
+    upper = pmin(100, percent + moe)
   )
+
+# Step 3: Plot the three measures together.
 
 p_nicotine <- ggplot(
   nicotine_trends,
@@ -1270,10 +1311,10 @@ p_nicotine <- ggplot(
   scale_color_brewer(palette = "Dark2") +
   theme_minimal()
 
-
+# View the third graph
 p_nicotine
 
-## Race
+######################## GRAPH 4: RACE / ETHNICITY ############################
 
 # STEP 1: Calculate the percentage of respondents in each race group
 
@@ -1329,158 +1370,11 @@ p_race <- ggplot(
 
 p_race
 
-## Deviant Behaviors
+######################### PATCHWORK: FOUR GRAPHS ##############################
 
-# STEP 1: Calculate the percentage of respondents reporting each deviant behavior (fight/binge_drinking/marijuana_use/cocaine_use) each year
-
-deviance_trends <- my_dataset %>%
-  group_by(year) %>%
-  summarise(
-    fight = weighted.mean(fight, weight, na.rm = TRUE) * 100,
-    binge_drinking = weighted.mean(binge_drinking, weight, na.rm = TRUE) * 100,
-    marijuana_use = weighted.mean(marijuana_use, weight, na.rm = TRUE) * 100,
-    cocaine_use = weighted.mean(cocaine_use, weight, na.rm = TRUE) * 100
-  )
-
-# STEP 2: Reshape data from wide to long format in order to create a separate line for each behavior on the same graph
-
-deviance_trends <- pivot_longer(
-  deviance_trends,
-  cols = c(fight, binge_drinking, marijuana_use, cocaine_use),
-  names_to = "behavior",
-  values_to = "percent"
-)
-
-# STEP 3: Create a line graph showing trends for all four deviant behaviors
-
-p_deviance <- ggplot(
-  deviance_trends,
-  aes(
-    x = year,
-    y = percent,
-    color = behavior,
-    group = behavior
-  )
-) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  labs(
-    title = "Deviant Behaviors",
-    x = "Year",
-    y = "Percent Reporting Behavior",
-    color = "Behavior"
-  ) +
-  scale_x_continuous(
-    breaks = c(1997, 2007, 2017, 2023)
-  ) +
-  scale_color_brewer(
-    palette = "Dark2"
-  ) +
-  scale_y_continuous(
-    limits = c(0, 100)
-  ) +
-  theme_minimal()
-
-## Sports
-
-# STEP 1: Calculate the percentage of respondents participating in sports in each year
-
-sports_trends <- my_dataset %>%
-  filter(!is.na(sports_group)) %>%
-  group_by(year, sports_group) %>%
-  summarise(
-    weighted_n = sum(weight, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  group_by(year) %>%
-  mutate(
-    percent = weighted_n / sum(weighted_n) * 100
-  ) %>%
-  ungroup()
-
-# STEP 2: Create a line graph showing changes in sports participation across four survey years
-
-p_sports <- ggplot(
-  sports_trends,
-  aes(
-    x = year,
-    y = percent,
-    color = sports_group,
-    group = sports_group
-  )
-) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  labs(
-    title = "Sports Participation",
-    x = "Year",
-    y = "Percent",
-    color = "Sports Participation"
-  ) +
-  scale_x_continuous(
-    breaks = c(1997, 2007, 2017, 2023)
-  ) +
-  scale_y_continuous(
-    limits = c(0, 100),
-    breaks = seq(0, 100, 20)
-  ) +
-  theme_minimal()
-
-
-
-## Nicotine
-
-# STEP 1: Calculate the percentage of respondents reporting nicotine use in each year
-
-nicotine_trends <- my_dataset %>%
-  group_by(year) %>%
-  summarise(
-    avg_nic = weighted.mean(nicotine_use, weight, na.rm = TRUE) * 100,
-    cig = weighted.mean(cig, weight, na.rm = TRUE) * 100,
-    vaping = weighted.mean(vaping, weight, na.rm = TRUE) * 100
-  )
-
-nicotine_trends <- pivot_longer(
-  nicotine_trends,
-  cols = c(avg_nic, cig, vaping),
-  names_to = "nicotine_type",
-  values_to = "percent"
-)
-
-# STEP 2: Create a line graph showing changes in nicotine use across the four years
-
-p_nicotine <- ggplot(
-  nicotine_trends,
-  aes(
-    x = year,
-    y = percent,
-    color = nicotine_type,
-    group = nicotine_type
-  )
-) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  labs(
-    title = "Nicotine Use",
-    x = "Year",
-    y = "Percent Reporting Nicotine Use",
-    color = "Nicotine Type"
-  ) +
-  scale_x_continuous(
-    breaks = c(1997, 2007, 2017, 2023)
-  ) +
-  scale_y_continuous(
-    limits = c(0, 100),
-    breaks = seq(0, 100, 20)
-  ) +
-  theme_minimal()
-
-
-
-############                   COMBINE ALL FOUR GRAPHS               ############
-
-
-# Use patchwork to arrange the four graphs into one 2 x 2 figure
+# This creates the main 2-by-2 figure:
+# top left = deviant behaviors; top right = sports participation;
+# bottom left = nicotine measures; bottom right = race/ethnicity.
 
 combined_trends <- (
   p_deviance | p_sports
@@ -1488,19 +1382,83 @@ combined_trends <- (
   p_nicotine | p_race
 )
 
-
-# Display the combined figure
-
+# Display the four graphs together
 combined_trends
 
-####################################################################################
-############         Compare our demographics with benchmarks      ############
-####################################################################################
+############## DEVIANT BEHAVIORS: SPORT VS. NO SPORT ##########################
 
-# To what extent is our sample different from the national population
-# of high school students in the U.S.? 
+# The next graph summaries answer a different question:
+# Within each year, what percentage of Sport and No Sport students report each
+# of the four behaviors? We calculate this separately for every year, group,
+# and behavior. This gives a fair comparison between the two sports groups.
 
-demographic_comparison
+# Step 1: Summarize by year, sports group, and behavior.
+# We reuse deviance_data, which already has one row per person/behavior and
+# valid weights. Exclude respondents whose sports group is unknown.
+
+deviance_by_sports <- deviance_data %>%
+  filter(!is.na(sports_group)) %>%
+  group_by(year, sports_group, behavior) %>%
+  summarise(
+    percent = weighted.mean(response, weight) * 100,
+    n_eff = sum(weight)^2 / sum(weight^2),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
+    moe = 1.96 * se * 100,
+    lower = pmax(0, percent - moe),
+    upper = pmin(100, percent + moe)
+  )
+
+# Step 2: Graph deviant behaviors among students who participated in sports.
+
+p_deviance_sport <- ggplot(
+  deviance_by_sports %>% filter(sports_group == "Sport"),
+  aes(x = year, y = percent, color = behavior, group = behavior)
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 1) +
+  labs(
+    title = "Deviant Behaviors: Sport",
+    x = "Year",
+    y = "Percent Reporting Behavior",
+    color = "Behavior"
+  ) +
+  scale_x_continuous(breaks = c(1997, 2007, 2017, 2023)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
+  scale_color_brewer(palette = "Dark2") +
+  theme_minimal()
+
+# Step 3: Graph deviant behaviors among students who did not participate in sports.
+
+p_deviance_no_sport <- ggplot(
+  deviance_by_sports %>% filter(sports_group == "No Sport"),
+  aes(x = year, y = percent, color = behavior, group = behavior)
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 1) +
+  labs(
+    title = "Deviant Behaviors: No Sport",
+    x = "Year",
+    y = "Percent Reporting Behavior",
+    color = "Behavior"
+  ) +
+  scale_x_continuous(breaks = c(1997, 2007, 2017, 2023)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
+  scale_color_brewer(palette = "Dark2") +
+  theme_minimal()
+
+# View the two sports-group graphs separately
+p_deviance_sport
+p_deviance_no_sport
+
+# Show the Sport and No Sport graphs side by side for easier comparison
+combined_deviance_sports <- p_deviance_sport | p_deviance_no_sport
+combined_deviance_sports
+
 
 ####################################################################################
 ############     Compare Whole Sample vs. Selected Complete-Case Sample    ############
@@ -1555,12 +1513,6 @@ demographic_comparison
 
 
 
-
-
-
-
-
-
 ####################################################################################
 ############ 1) COMPARE WHOLE SAMPLE VS. SELECTED COMPLETE-CASE SAMPLE ############
 ####################################################################################
@@ -1608,7 +1560,7 @@ demographic_samples <- bind_rows(
 
 
 
-         # STEP 2: Calculate weighted gender and race percentages (group by year and sample type)
+# STEP 2: Calculate weighted gender and race percentages (group by year and sample type)
 # this gives us separate percentages for 1997 original, 1997 complete cases, etc.
 # weighted.mean(female, weight) gives the weighted proportion female 
 # weighted.mean(1 - female, weight) gives us the proportion male 
@@ -1713,6 +1665,15 @@ sample_comparison <- demographic_comparison %>%
 
 sample_comparison
 
+####################################################################################
+############         Compare our demographics with benchmarks      ############
+####################################################################################
+
+# To what extent is our sample different from the national population
+# of high school students in the U.S.? 
+
+demographic_comparison
+
 
 # 2) Compare our weighted racial composition in the whole sample and our selected subsample
 # to a benchmark, like the American Community Survey or the nearest census 
@@ -1731,64 +1692,3 @@ sample_comparison
 
 
 
-fight_trends <- my_dataset %>%
-  filter(!is.na(sports_group)) %>%
-  group_by(year, sports_group) %>%
-  summarise(
-    percent = weighted.mean(fight, weight, na.rm = TRUE) * 100,
-    n = sum(!is.na(fight)),
-    .groups = "drop"
-  ) %>%
-  mutate(
-    proportion = percent / 100,
-    se = sqrt(proportion * (1 - proportion) / n),
-    lower = (proportion - 1.96 * se) * 100,
-    upper = (proportion + 1.96 * se) * 100
-  )
-
-fight_trends
-
-p_fight_sport <- ggplot(
-  fight_trends %>% filter(sports_group == "Sport"),
-  aes(
-    x = year,
-    y = percent
-  )
-) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  geom_errorbar(
-    aes(
-      ymin = lower,
-      ymax = upper
-    ),
-    width = 1
-  ) +
-  labs(
-    title = "Fighting Among Students Participating in Sports",
-    x = "Year",
-    y = "Percent Reporting Fighting"
-  ) +
-  scale_x_continuous(
-    breaks = c(1997, 2007, 2017, 2023)
-  ) +
-  scale_y_continuous(
-    limits = c(0, 100),
-    breaks = seq(0, 100, 20)
-  ) +
-  theme_minimal()
-
-
-deviance_trends %>%
-  filter(is.na(percent) | !is.finite(percent))
-
-deviance_trends <- my_dataset %>%
-  filter(!is.na(weight)) %>%
-  group_by(year) %>%
-  summarise(
-    fight = weighted.mean(fight, weight, na.rm = TRUE) * 100,
-    binge_drinking = weighted.mean(binge_drinking, weight, na.rm = TRUE) * 100,
-    marijuana_use = weighted.mean(marijuana_use, weight, na.rm = TRUE) * 100,
-    cocaine_use = weighted.mean(cocaine_use, weight, na.rm = TRUE) * 100
-  )
-deviance_trends

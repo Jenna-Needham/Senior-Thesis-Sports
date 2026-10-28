@@ -3,7 +3,7 @@
     "path": "~/GitHub/Senior-Thesis-Sports/SPORTS.R",
     "project_path": "SPORTS.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "2846929432",
     "contents": "",
     "dirty": false,
     "created": 1793165816806.0,
@@ -12,17 +12,17 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "1679,26",
-        "scrollLine": "1675",
+        "cursorPosition": "1453,45",
+        "scrollLine": "1439",
         "docOutlineVisible": "0",
         "docOutlineSize": "112"
     },
     "folds": "",
-    "lastKnownWriteTime": 1793178939,
+    "lastKnownWriteTime": 1793197066,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1793178939571,
+    "last_content_update": 1793197066661,
     "read_only": false,
     "read_only_alternatives": []
 }
