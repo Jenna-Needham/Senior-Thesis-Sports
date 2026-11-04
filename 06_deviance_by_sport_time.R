@@ -1,19 +1,28 @@
-
 ############## DEVIANT BEHAVIORS: SPORT VS. NO SPORT ##########################
 
-# The next graph summaries answer a different question:
-# Within each year, what percentage of Sport and No Sport students report each
-# of the four behaviors? We calculate this separately for every year, group,
-# and behavior. This gives a fair comparison between the two sports groups.
+# Question: Within each survey year, how do rates of fighting, binge drinking, 
+# marijuana use, and cocaine use compare between students who participate in sports
+# and students who do not participate in sports? 
 
-# Step 1: Summarize by year, sports group, and behavior.
-# We reuse deviance_data, which already has one row per person/behavior and
-# valid weights. Exclude respondents whose sports group is unknown.
+# STEP 1: Prepare the data for the comparison 
+# We reuse deviance_data from Graph 1 
+
+# this is because it already contains the four behavior variables in long format 
+# also includes the year and sports_participation group, excludes missing behavior 
+# responses, and excldues missing or invalid survey weights 
+
+# We only need to remove respondents whose sports participation group 
+# is unknown because we cannot classify them as Sport or No Sport 
+# This leaves us with valid behavior responses from respondents whose sports 
+# participation status is also known 
+
+# STEP 2: Calcualte the weighted percentage within each subgroup 
 
 deviance_by_sports <- deviance_data %>%
   filter(!is.na(sports_group)) %>%
   group_by(year, sports_group, behavior) %>%
   summarise(
+    n_valid = n(),
     percent = weighted.mean(response, weight) * 100,
     n_eff = sum(weight)^2 / sum(weight^2),
     .groups = "drop"
@@ -25,7 +34,18 @@ deviance_by_sports <- deviance_data %>%
     upper = pmin(100, percent + moe)
   )
 
-# Step 2: Graph deviant behaviors among students who participated in sports.
+# STEP 3: Examine the subgroup calculations before making the graphs 
+
+deviance_by_sports %>%
+  select(year, sports_group, behavior, n_valid,
+         n_eff, percent, moe, lower, upper) %>%
+  arrange(year, sports_group, behavior)
+
+# STEP 4: Create a graph for students who participate in sports 
+
+# Keep only the Sport group, each line represents one behavior 
+# Each point represents the weighted percentage of Sport students 
+# reporting that behavior in a particular survey year 
 
 p_deviance_sport <- ggplot(
   deviance_by_sports %>% filter(sports_group == "Sport"),
@@ -45,7 +65,7 @@ p_deviance_sport <- ggplot(
   scale_color_brewer(palette = "Dark2") +
   theme_minimal()
 
-# Step 3: Graph deviant behaviors among students who did not participate in sports.
+# STEP 5: Create a graph for students who do not participate in sports 
 
 p_deviance_no_sport <- ggplot(
   deviance_by_sports %>% filter(sports_group == "No Sport"),
@@ -72,4 +92,3 @@ p_deviance_no_sport
 # Show the Sport and No Sport graphs side by side for easier comparison
 combined_deviance_sports <- p_deviance_sport | p_deviance_no_sport
 combined_deviance_sports
-

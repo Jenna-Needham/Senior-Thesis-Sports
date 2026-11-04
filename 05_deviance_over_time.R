@@ -1,10 +1,4 @@
-
-
-
-
-
 ############              PHASE 4: FIGURES AND TRENDS                  ############
-
 
 # The percentages below use the YRBS weight variable
 # The margins of error below are approximate 95% confidence intervals. The sample size
@@ -17,11 +11,28 @@
 # upper   = percent plus margin of error (not above 100%)
 # geom_errorbar() draws the vertical line from lower to upper around each point.
 
+
 ######################### GRAPH 1: DEVIANT BEHAVIORS ###########################
 
-# Step 1: Put the four deviant-behavior variables into one column.
-# This makes it possible to draw four lines on the same graph.
-# Each variable is coded 0 = no and 1 = yes.
+# Question for this graph: how has the percentage of students reporting fighting, 
+# binge-drinking, marijuana use, and cocaine use changed across the four survey years? 
+
+# STEP 1: Prepare the data for the graph
+
+# Originally, each student had one row containing four separate variables: 
+# fight, binge_drinking, marijuana_use, and cocaine-use
+
+# However, ggplot needs the behavior names to be in one column if we want to create 
+# four separate lines on the same graph. We use pivot_longer() to change data from wide to long format
+
+# WIDE: one row per student, with four behavior columns
+# LONG: one row per student per behavior, with one behavior column and one response column 
+
+# Therefore, each student can contribute up to four rows after pivot_longer() 
+# This increases the number of rows but not the number of unique original responses 
+
+# Some students have missing responses for certain behaviors, so they may contribute fewer
+# than four rows
 
 deviance_data <- my_dataset %>%
   select(year, sports_group, weight, fight, binge_drinking,
@@ -33,30 +44,78 @@ deviance_data <- my_dataset %>%
   ) %>%
   filter(!is.na(response), !is.na(weight), weight > 0)
 
-# Step 2: Calculate the weighted percentage for each behavior in each year.
-# The effective sample size is calculated using the weights for the valid
-# responses to that behavior and year.
+# STEP 2: Calculate the weighted percentage and margin of error 
+
+# group_by(year, behavior) separates the data into individual calculations
+
+# For example: 
+# 1997 + Fight, 1997 + Binge Drinking, 1997 + Marijuana Use, 1997 + Cocaine Use
+
+# Although pivot_longer() created four rows per student, each calculation below uses
+# only one behavior at a time 
+
+# Therefore the sample size for 1997 + Fight is based only on students with valid fighting 
+# responses in 1997 
+
+# It does not use all four behavior responses as four separate students 
 
 deviance_trends <- deviance_data %>%
   group_by(year, behavior) %>%
   summarise(
+    
+    # Number of valid student responses for this behavior and year
+    # This is the actual number of observations used in the calculation
+    n_valid = n(),
+    
+    # Weighted percentage reporting the behavior 
+    # Because responses are coded 0 = No and 1 = Yes, the weighted mean represents the 
+    # weighted proportion who answered Yes
+    # Multiplying by 100 converts the proportion into a percentage 
     percent = weighted.mean(response, weight) * 100,
+    
+    # This estimates how many equally weighted observations would provide comparable 
+    # precision after accounting for unequal survey weights 
+    # This is calculated separately for every year and behavior because it is inside 
+    # the grouped summarise() function 
     n_eff = sum(weight)^2 / sum(weight^2),
     .groups = "drop"
   ) %>%
   mutate(
-    # Approximate standard error, converted to percentage points
+    
+    # Approximate standard error
+    # First, convert the percentage back into a proportion between 0 and 1
+    # The formula uses p(1-p) divided by the effective sample size
+    # The standard error measures the approximate sampling variability around the estimated
+    # percentage
     se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
-    # 1.96 is used for an approximate 95% margin of error
+    
+    # 1.96 is used for an approximate 95% margin of error (multiplying by 100 converts it to a percent)
     moe = 1.96 * se * 100,
+    
+    # Lower = weighted percentage minus margin of error
+    # Upper = weighted percentage plus margin of error 
+    # pmax() prevents the lower limit from falling below 0% 
+    # pmin() prevents the upper limit from exceeding 100% 
     lower = pmax(0, percent - moe),
     upper = pmin(100, percent + moe)
   )
 
+# STEP 4: Examine the numbers before making the graph
+# This lets us see the actual sample size, effective sample size, weighted percentage, and
+# margin of error for each year and behavior
+
+deviance_trends %>%
+  select(year, behavior, n_valid, n_eff, percent, moe, lower, upper)
+
 # This seems to inflate power because we've multiplied n x 4 for year and then by 4 again for each group
 # double check errors; perhaps use lm predictions
 
-# Step 3: Draw the weighted percentages and their error bars.
+# STEP 4: Create the graph of deviant behaviors over time
+
+# x = year (four YRBS survey years)
+# y = percent (weighted percentage of students reporting the behavior)
+# color = behavior (each behavior has a different color)
+# group = behavior: connects the same behavior across surve years 
 
 p_deviance <- ggplot(
   deviance_trends,
@@ -81,41 +140,88 @@ p_deviance
 
 ###################### GRAPH 2: SPORT VS. NO SPORT ############################
 
-# Step 1: Keep only respondents with a known sports group and valid weight.
-# First, calculate the effective sample size for each year.
+# STEP 1: Keep respondents with usable sports participation information
+
+# Unlike Graph 1, this graph does not need pivot_longer() because each student 
+# already has one row in my_dataset
+
+# We only need respondents who have a known sports_group and have a valid survey weight 
 
 sports_valid <- my_dataset %>%
   filter(!is.na(sports_group), !is.na(weight), weight > 0)
 
+
+# STEP 2: Calculate the effective sample size for each year
+
+# We calculate this once for each survey year because the Sport and No Sport
+# percentages are two parts of the same overall yearly sample 
+
 sports_year_n <- sports_valid %>%
   group_by(year) %>%
   summarise(
-    n_eff = sum(weight)^2 / sum(weight^2),
+    
+    # Actual number of respondents with known sports participation 
+    n_year = n(),
+    
+    # Effective sample size for the entire valid sports participation sample in that year
+    n_eff_year = sum(weight)^2 / sum(weight^2),
     .groups = "drop"
   )
 
-# Step 2: Add the weights within Sport and No Sport.
-# The percent for each category is its share of the total weighted count
-# for that year. Because there are two categories, they should add to 100%.
+# STEP 3: Calculate the weighted percentages in Sport and No Sport 
 
 sports_trends <- sports_valid %>%
   group_by(year, sports_group) %>%
   summarise(
+    
+    # Actual number of respondents in this sports category 
+    n_group = n(),
+    
+    # Sum of survey weights for this category 
+    # This is the weighted total, showing the contribution of this 
+    # category after applying the survey weights 
     weighted_n = sum(weight),
+    
     .groups = "drop"
   ) %>%
+  
+  # Bring the Sport and No Sport categories back together by year
+  # This lets us calculate each category's share of the total weighted sample
+  # for that year
   group_by(year) %>%
-  mutate(percent = weighted_n / sum(weighted_n) * 100) %>%
+  mutate(
+    
+    # Divide the weighted total for each category by the combined weighted total 
+    # for that year
+    # Sport and No Sport should add to 100%
+    
+    percent = weighted_n / sum(weighted_n) * 100) %>%
   ungroup() %>%
+  
+  # Join the effective sample size for the entire year
+  # This is why n_eff appears twice, once on the Sport row and another on the No Sport row 
+  # It is the same effective sample size and we do not add them together 
+  
   left_join(sports_year_n, by = "year") %>%
   mutate(
-    se = sqrt((percent / 100) * (1 - percent / 100) / n_eff),
+    
+    # Calculate the approximate standard error using the overall effective sample
+    # size for that year
+    
+    se = sqrt((percent / 100) * (1 - percent / 100) / n_eff_year),
     moe = 1.96 * se * 100,
     lower = pmax(0, percent - moe),
     upper = pmin(100, percent + moe)
   )
 
-# Step 3: Plot the weighted percentages for Sport and No Sport.
+
+# STEP 5: Examine the results before making the graph 
+
+sports_trends %>%
+  select(year, sports_group, n_group, weighted_n,
+         percent, n_year, n_eff_year, moe)
+
+# STEP 5: Create the graph 
 
 p_sports <- ggplot(
   sports_trends,
@@ -145,7 +251,18 @@ p_sports
 # Therefore, avg_nic is not measured exactly the same way in every year.
 # Vaping is NA in 1997 and 2007 because it was not measured in those datasets.
 
-# Step 1: Put the three nicotine measures into one column to create three lines.
+# STEP 1: Prepare nicotine data
+
+# Keep year, survey weight, and three nitcotine measures
+# rename nicotine_use to avg_nic for clarity 
+
+# pivot_longer() puts the three nicotine measures into one column, this 
+# allows us to see them as three separate lines on one graph 
+
+# Each student can contribute up to three rows: 
+# 1. one for combined nicotine_use measure
+# 2. one for cig measure
+# 3. one for vaping measure 
 
 nicotine_data <- my_dataset %>%
   select(year, weight, nicotine_use, cig, vaping) %>%
@@ -157,8 +274,9 @@ nicotine_data <- my_dataset %>%
   ) %>%
   filter(!is.na(response), !is.na(weight), weight > 0)
 
-# Step 2: Calculate weighted percentages and approximate margins of error.
-# Missing vaping values in 1997 and 2007 are excluded, not counted as 0%.
+# STEP 2: Calculate the weighted percentage and margin of error
+
+# group_by(year, nicotine_type) separates the data into individual calculations for each nicotine measure in each year
 
 nicotine_trends <- nicotine_data %>%
   group_by(year, nicotine_type) %>%
@@ -174,7 +292,13 @@ nicotine_trends <- nicotine_data %>%
     upper = pmin(100, percent + moe)
   )
 
-# Step 3: Plot the three measures together.
+# STEP 3: Examine the results before making the graph
+
+nicotine_trends %>%
+  select(year, nicotine_type, n_valid, n_eff,
+         percent, moe, lower, upper)
+
+# STEP 4: Create the graph
 
 p_nicotine <- ggplot(
   nicotine_trends,
@@ -199,7 +323,10 @@ p_nicotine
 
 ######################## GRAPH 4: RACE / ETHNICITY ############################
 
-# STEP 1: Calculate the percentage of respondents in each race group
+# STEP 1: Keep respondents with valid race/ethnicity information 
+# Students with missing race_group information are excluded
+
+# STEP 2: Calculate the weighted percentages for each race/ethnicity group in each year
 
 race_trends <- my_dataset %>%
   filter(!is.na(race_group)) %>%
@@ -214,13 +341,13 @@ race_trends <- my_dataset %>%
   ) %>%
   ungroup()
 
-# STEP 2: Check that percentages add up to 100% each year
+# STEP 3: Check that percentages add up to 100% each year
 
 race_trends %>%
   group_by(year) %>%
   summarise(total_percent = sum(percent))
 
-# STEP 3: Create the race composition graph
+# STEP 4: Create the race composition graph
 
 p_race <- ggplot(
   race_trends,
@@ -251,6 +378,7 @@ p_race <- ggplot(
   ) +
   theme_minimal()
 
+# View the fourth graph
 p_race
 
 ######################### PATCHWORK: FOUR GRAPHS ##############################
