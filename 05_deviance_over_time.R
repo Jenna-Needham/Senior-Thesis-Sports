@@ -2,7 +2,8 @@
 
 # The percentages below use the YRBS weight variable
 # The margins of error below are approximate 95% confidence intervals. The sample size
-# does not fully account for the YRBS's complex survey design (e.g., clustering, stratification). Therefore, these intervals are likely too narrow.
+# does not fully account for the YRBS's complex survey design (e.g., clustering, stratification). 
+# Therefore, these intervals are likely too narrow.
 #
 # percent = weighted percentage for a group/year
 # n_eff   = approximate effective sample size after accounting for unequal weights
