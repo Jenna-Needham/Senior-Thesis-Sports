@@ -9,7 +9,11 @@
 ############              Pre-Analysis: settings, packages, and data    ############
 
 ### Settings and Packages
-# set WD manually
+# set WD for Needham
+setwd("G:/.shortcut-targets-by-id/1BNQKSfuws_0ShC-VsiG83yK6DMI5EXrn/SPORTS/work")
+
+# set WD for kline
+setwd("G:/My Drive/EDU_SYNC/Research/Active/SPORTS/work")
 
 # install.packages('dplyr', repos = 'https://cloud.r-project.org')
 # install.packages("psych")

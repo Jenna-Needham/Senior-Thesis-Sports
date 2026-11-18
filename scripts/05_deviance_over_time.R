@@ -65,7 +65,6 @@ deviance_trends <- deviance_data %>%
   summarise(
     
     # Number of valid student responses for this behavior and year
-    # This is the actual number of observations used in the calculation
     n_valid = n(),
     
     # Weighted percentage reporting the behavior 
@@ -232,10 +231,10 @@ p_sports <- ggplot(
   geom_point(size = 2) +
   geom_errorbar(aes(ymin = lower, ymax = upper), width = 1) +
   labs(
-    title = "Sports Participation",
+    title = "Sports Participation by Year",
     x = "Year",
     y = "Percent of Students",
-    color = "Sports Participation"
+    color = "Participation Status"
   ) +
   scale_x_continuous(breaks = c(1997, 2007, 2017, 2023)) +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20)) +
@@ -282,6 +281,7 @@ nicotine_data <- my_dataset %>%
 nicotine_trends <- nicotine_data %>%
   group_by(year, nicotine_type) %>%
   summarise(
+    n_valid = n(),
     percent = weighted.mean(response, weight) * 100,
     n_eff = sum(weight)^2 / sum(weight^2),
     .groups = "drop"
