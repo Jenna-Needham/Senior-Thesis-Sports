@@ -1,4 +1,68 @@
-.Rproj.user
+# ---- R session files ----
 .Rhistory
+.Rapp.history
 .RData
+.RDataTmp
 .Ruserdata
+
+# ---- RStudio / Positron ----
+.Rproj.user/
+.positron/
+# Keep *.Rproj files (they hold project settings)
+
+# ---- Secrets & environment variables ----
+.Renviron
+.env
+.httr-oauth
+*.pem
+*.key
+
+# ---- R Markdown / knitr ----
+*_cache/
+/cache/
+*.utf8.md
+*.knit.md
+
+# ---- Quarto ----
+/.quarto/
+*_files/
+/_site/
+/_freeze/
+
+# ---- renv (renv also writes its own renv/.gitignore) ----
+renv/library/
+renv/local/
+renv/cellar/
+renv/lock/
+renv/python/
+renv/sandbox/
+renv/staging/
+# Commit renv.lock, renv/activate.R, renv/settings.json
+
+# ---- Package development ----
+*-Ex.R
+/*.tar.gz
+/*.Rcheck/
+vignettes/*.html
+vignettes/*.pdf
+po/*~
+# pkgdown site; uncomment only if docs/ is generated
+# docs/
+
+# ---- Deployment ----
+rsconnect/
+
+# ---- OS clutter ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Data & outputs (optional; uncomment as needed) ----
+# Useful for projects with confidential or large data
+# data/raw/
+# *.csv
+# *.xlsx
+# *.rds
+# *.sav
+# *.dta
+# output/
